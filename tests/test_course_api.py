@@ -56,3 +56,21 @@ def test_author_export_keeps_server_reference(monkeypatch, tmp_path):
     monkeypatch.setattr(course_content, "CONTENT_PATH", path)
     restored = course_content.find_lesson(lesson["id"])
     assert restored["code_task"]["solution"] == LESSONS[0]["code_task"]["solution"]
+
+
+def test_vercel_entrypoint_exports_fastapi():
+    from app import app as deployed_app
+    assert deployed_app is app
+
+
+def test_routing_failure_returns_json_without_exposing_internal_error(monkeypatch):
+    from backend.core import routing
+
+    def fail(*args):
+        raise RuntimeError("internal filesystem path or native library failure")
+
+    monkeypatch.setattr(routing, "route_circuit", fail)
+    result = client.post("/course/routing", json={"circuit": "near", "topology": "line"})
+    assert result.status_code == 503
+    assert "temporarily unavailable" in result.json()["detail"]
+    assert "filesystem" not in result.text

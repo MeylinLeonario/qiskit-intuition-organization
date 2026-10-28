@@ -1,0 +1,398 @@
+/* The same paper, binding and self-hosted typography as education_theme.py. */
+@font-face {
+  font-family: "Caveat";
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/Caveat-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Patrick Hand";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/PatrickHand-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Courier Prime";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/CourierPrime-Regular-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegible-Regular-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegible-Bold-latin.woff2") format("woff2");
+}
+:root {
+  --desk: #d9cfb8;
+  --paper: #fbf7ec;
+  --paper-2: #f4eedc;
+  --rule: rgba(73, 128, 196, 0.16);
+  --margin: rgba(214, 72, 72, 0.42);
+  --ink: #1d3a8a;
+  --navy: #2b2a27;
+  --muted: #6f6a5e;
+  --marker: #ffe867;
+  --cover: #23365c;
+  --hand: "Patrick Hand", "Segoe Print", cursive;
+  --script: "Caveat", cursive;
+  --type: "Courier Prime", "Courier New", monospace;
+  --hand-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+body {
+  background:
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 255, 255, 0.35),
+      transparent 40rem
+    ),
+    repeating-linear-gradient(
+      115deg,
+      rgba(120, 95, 60, 0.035) 0 2px,
+      transparent 2px 9px
+    ),
+    var(--desk);
+  font-family: var(--hand);
+  color: var(--navy);
+  font-size: 18px;
+}
+.course-main,
+.site-main {
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-width: 0;
+  max-width: 1160px;
+  margin: 1.4rem 2rem 3rem;
+  padding: 2.6rem 3rem 4rem 6.2rem;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 4.6rem,
+      var(--margin) 4.6rem,
+      var(--margin) calc(4.6rem + 2px),
+      transparent calc(4.6rem + 2px)
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 31px,
+      var(--rule) 31px,
+      var(--rule) 32px
+    );
+  background-position:
+    0 0,
+    0 3.2rem;
+  border-radius: 3px 8px 8px 3px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.08),
+    6px 6px 0 -1px var(--paper-2),
+    6px 6px 1px rgba(0, 0, 0, 0.1),
+    12px 12px 0 -2px #efe8d3,
+    0 22px 40px rgba(60, 45, 20, 0.22);
+}
+.course-main::before,
+.site-main::before {
+  content: "";
+  position: absolute;
+  top: 1.2rem;
+  bottom: 1.2rem;
+  left: 1.3rem;
+  width: 22px;
+  background-image: radial-gradient(
+    circle at 11px 11px,
+    var(--desk) 0 7px,
+    rgba(0, 0, 0, 0.18) 7.5px,
+    transparent 9px
+  );
+  background-size: 22px 58px;
+  background-repeat: repeat-y;
+  pointer-events: none;
+}
+h1,
+h2,
+h3,
+h4,
+.course-main h1 {
+  font-family: var(--script);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+h1,
+.course-main h1 {
+  font-size: clamp(2.6rem, 4vw, 3.3rem);
+}
+h1 {
+  width: fit-content;
+  padding: 0 0.15em;
+  background: linear-gradient(
+    transparent 62%,
+    var(--marker) 62%,
+    var(--marker) 90%,
+    transparent 90%
+  );
+}
+h2 {
+  font-size: 2.2rem;
+}
+h3 {
+  font-size: 1.85rem;
+}
+.course-main p,
+.course-main li {
+  line-height: 1.6;
+}
+.eyebrow {
+  font-family: var(--type);
+  color: #ab2e22;
+}
+.site-sidebar {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.035) 0 2px,
+      transparent 2px 6px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(0, 0, 0, 0.06) 0 2px,
+      transparent 2px 6px
+    ),
+    var(--cover);
+  border-right: 10px solid #182641;
+  box-shadow: inset -6px 0 12px rgba(0, 0, 0, 0.25);
+}
+.site-brand {
+  background: var(--paper);
+  color: var(--navy);
+  padding: 16px 12px;
+  border: 2px solid var(--navy);
+  outline: 1px solid var(--navy);
+  outline-offset: 3px;
+  border-radius: 6px;
+  transform: rotate(-1.2deg);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+.site-brand strong {
+  font-family: var(--script);
+  font-size: 1.7rem;
+  color: var(--ink);
+}
+.site-brand small {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.brand-mark {
+  background: var(--marker);
+  color: var(--ink);
+  box-shadow: none;
+  border-radius: var(--hand-radius);
+}
+.site-sidebar nav button,
+.site-sidebar nav a {
+  font-family: var(--script);
+  font-size: 1.35rem;
+}
+.site-sidebar nav button.active {
+  background: rgba(241, 234, 214, 0.15);
+  border-left: 5px solid #e8b04b;
+  box-shadow: none;
+}
+.site-sidebar input[type="checkbox"] {
+  accent-color: var(--marker);
+}
+button,
+.course-stages button {
+  border: 2px solid var(--ink);
+  border-radius: var(--hand-radius);
+  color: var(--ink);
+  background: #fffdf5;
+  box-shadow: 2px 3px 0 rgba(29, 58, 138, 0.18);
+}
+button.primary,
+.course-stages button.primary {
+  background: var(--marker);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+button:hover {
+  background: #fff1a1;
+}
+button:disabled {
+  opacity: 0.5;
+}
+.panel,
+.builder-card,
+.explanation-card,
+.stage-panel {
+  background: #fffdf5;
+  border: 1px solid #b9b19c;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+}
+.course-main .course-lesson {
+  padding: 16px 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.course-main .course-lab {
+  padding: 20px;
+}
+.course-main .course-notes,
+.explanation-card {
+  position: relative;
+  background: #fff1a1;
+}
+.course-notes::before,
+.explanation-card::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 18px;
+  width: 70px;
+  height: 18px;
+  background: rgba(236, 224, 176, 0.78);
+  transform: rotate(-3deg);
+  pointer-events: none;
+}
+input,
+select,
+textarea,
+.course-main textarea {
+  background-color: #fffdf5;
+  border-color: #6f6a5e;
+  border-radius: 4px;
+}
+textarea,
+.course-main .code-editor {
+  font-family: var(--type);
+  color: #1e1e1e;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 23px,
+      rgba(73, 128, 196, 0.1) 23px 24px
+    ),
+    #fffdf5;
+  line-height: 24px;
+}
+pre,
+code {
+  font-family: ui-monospace, "DejaVu Sans Mono", monospace;
+}
+pre,
+.course-main pre {
+  background: #fffef9;
+  border: 1px solid #ddd3b8;
+  color: #2b2a27;
+  border-radius: 2px;
+  white-space: pre;
+  overflow-x: auto;
+  overflow-wrap: normal;
+  max-width: 100%;
+}
+.plain-reading,
+.plain-reading button,
+.plain-reading input,
+.plain-reading select,
+.plain-reading label,
+.plain-reading h1,
+.plain-reading h2,
+.plain-reading h3,
+.plain-reading .site-brand strong {
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+.plain-reading {
+  font-size: 18px;
+  line-height: 1.8;
+}
+.plain-reading .site-brand {
+  transform: none;
+}
+.plain-reading h1 {
+  font-size: 2.3rem;
+}
+.plain-reading h2 {
+  font-size: 1.8rem;
+}
+.plain-reading h3 {
+  font-size: 1.4rem;
+}
+@media (max-width: 1100px) {
+  .course-main,
+  .site-main {
+    margin: 1.2rem 1rem 2rem;
+    padding: 2rem 1.5rem 3rem 5.6rem;
+  }
+}
+@media (max-width: 880px) {
+  .site-sidebar {
+    border-right: 0;
+    border-bottom: 8px solid #182641;
+  }
+  .site-brand {
+    max-width: 300px;
+  }
+  .course-main,
+  .site-main {
+    width: calc(100% - 2rem);
+  }
+}
+@media (max-width: 540px) {
+  .course-main,
+  .site-main {
+    padding: 1.5rem 0.9rem 2rem 3.4rem;
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent 2.7rem,
+        var(--margin) 2.7rem,
+        var(--margin) calc(2.7rem + 2px),
+        transparent calc(2.7rem + 2px)
+      ),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 31px,
+        var(--rule) 31px 32px
+      );
+  }
+  .course-main::before,
+  .site-main::before {
+    left: 0.45rem;
+    width: 18px;
+    background-size: 18px 58px;
+  }
+  .course-main .course-lab {
+    padding: 12px;
+  }
+  .course-main .course-lesson {
+    padding: 12px 0;
+  }
+  .course-stages {
+    gap: 8px;
+  }
+  .course-stages button {
+    font-size: 1rem;
+    padding: 8px;
+  }
+}
+.plain-reading .site-sidebar nav a {
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+@media (max-width: 880px) {
+  .site-sidebar .sidebar-lesson {
+    display: grid;
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+}

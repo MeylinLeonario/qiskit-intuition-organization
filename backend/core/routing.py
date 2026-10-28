@@ -20,6 +20,7 @@ def route_circuit(circuit_name: str, topology: str) -> dict:
     native = transpile(
         qc, coupling_map=coupling, basis_gates=["rz", "sx", "x", "cx"],
         initial_layout=[0, 1, 2, 3], optimization_level=1, seed_transpiler=7,
+        num_processes=1,
     )
     ops = dict(native.count_ops())
     return {

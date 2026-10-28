@@ -1,4 +1,6 @@
 """Course endpoints; reference exercise solutions remain on the server."""
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -62,4 +64,8 @@ def routing(req: RoutingRequest):
     names = dict(zip(["near", "far", "star"], ROUTING_CIRCUITS))
     if req.circuit not in names or req.topology not in {"line", "full"}:
         raise HTTPException(status_code=422, detail="Unknown circuit or topology")
-    return route_circuit(names[req.circuit], "Line" if req.topology == "line" else "Full")
+    try:
+        return route_circuit(names[req.circuit], "Line" if req.topology == "line" else "Full")
+    except Exception:
+        logging.getLogger(__name__).exception("Hardware transpilation failed")
+        raise HTTPException(status_code=503, detail="Circuit compilation is temporarily unavailable. Please try again shortly.") from None
