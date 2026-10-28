@@ -3,8 +3,8 @@ title: Qiskit Intuition
 emoji: ⚛️
 colorFrom: blue
 colorTo: green
-sdk: streamlit
-app_file: app.py
+sdk: docker
+app_port: 7860
 pinned: false
 ---
 
@@ -20,7 +20,7 @@ Most quantum courses open with linear algebra. This one opens with a picture you
 
 | Step | What you do |
 | --- | --- |
-| 1. **Intuition** | Play with an interactive picture: a 3D Bloch sphere you can drag, a shot sampler, interference phasors, an entanglement sampler, a Grover amplifier, live transpiler routing and more. |
+| 1. **Intuition** | Play with an interactive picture: an adjustable Bloch vector, a shot sampler, interference phasors, an entanglement sampler, a Grover amplifier, live transpiler routing and more. |
 | 2. **Predict** | Commit to an answer. Every option, right or wrong, explains why it is tempting. |
 | 3. **Experiment** | Build the circuit in a guided builder and watch each qubit's Bloch sphere. |
 | 4. **Formalize** | Learn the math, now that the picture exists. |
@@ -43,21 +43,40 @@ Most quantum courses open with linear algebra. This one opens with a picture you
 - **Instant feedback on explanations.** "Check my reasoning" compares what you wrote with each lesson's key ideas and common misconceptions. It works offline. With `GEMINI_API_KEY` set, an AI model adds notes.
 - **Playground.** A free circuit builder and Qiskit code runner with a code coach, plus practice challenges. Nothing there affects course progress.
 - **Glossary.** Every term with its picture and its precise definition.
-- **Built for every screen.** On phones the sidebar tucks away and page tabs take its place, and the 3D sphere works with touch.
-- **Easy to read.** A sidebar switch swaps the handwriting for Atkinson Hyperlegible, a font designed for low-vision readers, and straightens tilted notes. Colours meet WCAG AA contrast.
-- **Feedback button on every page.** Testers can report what confused them, what broke or what they liked. Each report becomes a GitHub issue tagged with the page, lesson and step.
-- **Content Studio.** Course authors can edit every part of a lesson in plain text: intuition, widget, quiz, worked circuit, math, Qiskit example, exercise and reflection rubric. To open it, go to the sidebar → **Course author**. Saving checks the lesson, runs the example and confirms the exercise's solution passes.
+- **Built for every screen.** On phones the sidebar tucks away and page tabs take its place, and the experiment controls work with touch.
+- **Easy to read.** A sidebar switch increases text size and line spacing. Colours meet WCAG AA contrast.
+- **Feedback button on every page.** Testers can report what confused them, what broke or what they liked. opens a pre-filled GitHub issue with the page, lesson and step.
+- **Content Studio.** Course authors can edit every part of a lesson in plain text: intuition, widget, quiz, worked circuit, math, Qiskit example, exercise and reflection rubric. To open it, go to the sidebar → **Course author**. Preview validates the JSON lesson structure; Qiskit examples and exercises can be checked in the course.
 
 ## Run locally
 
-Python 3.10 or newer:
+The frontend runs on **Node.js 22+ / Next.js**. Python 3.11+ serves the Qiskit
+sandbox and exercise checker behind a same-origin Node API proxy.
 
 ```bash
+python -m venv .venv
+. .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app.py
+uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-Then open http://localhost:8501.
+In another terminal:
+
+```bash
+cd web
+npm ci
+npm run dev
+```
+
+Open http://localhost:3000. The learning path, simulator, notebook and glossary
+work without the Python service; executing Qiskit and checking exercises or
+reflections require it. Set `NEXT_PUBLIC_API_URL` in `web/.env.local` when Python runs
+elsewhere (default: `http://127.0.0.1:8000`). This variable is server-only.
+
+Production: `cd web && npm run build && npm start`, alongside the Python service.
+The root Dockerfile packages both processes and exposes the Node frontend on
+port 7860 (`docker build -t qiskit-intuition .` then
+`docker run --rm -p 7860:7860 qiskit-intuition`).
 
 ## Configuration
 
@@ -73,7 +92,7 @@ Everything is optional. On Hugging Face, add these as **Space secrets**. Locally
 
 ## Deployment
 
-Every push to `main` runs CI. It also uploads the app to the Hugging Face Space through `.github/workflows/sync-to-huggingface.yml`, which needs an `HF_TOKEN` repository secret with write access to the Space. The Space reads the YAML header at the top of this file and starts `app.py`.
+Every push to `main` runs CI. It also uploads the app to the Hugging Face Space through `.github/workflows/sync-to-huggingface.yml`, which needs an `HF_TOKEN` repository secret with write access to the Space. The Space uses the Docker SDK and the root Dockerfile to start the Node frontend and private Python service.
 
 ## Editing course content
 
@@ -81,15 +100,19 @@ Changes made in the Content Studio apply to your session straight away. To publi
 
 1. Download `site_content.json` from the Content Studio.
 2. Replace `frontend/site_content.json` with it.
-3. Commit and push. The Space redeploys automatically.
+3. Run `python scripts/export_course.py` to regenerate the bundled web curriculum.
+4. Commit both files and push. CI checks that the export is current; the Space redeploys automatically.
 
 Visitors can't change the live course. See [CONTRIBUTING.md](CONTRIBUTING.md) for the lesson format and how to write lessons directly in Python.
 
 ## Tests
 
 ```bash
+pip install -r requirements-dev.txt
+python scripts/export_course.py --check
 ruff check .
 pytest tests -q
+cd web && npm test && npm run lint && npm run build
 ```
 
 The tests check the quantum engine, the sandbox (including escape attempts), the exercise checker, the explanation reviewer, Content Studio parsing, notebook save and restore, and feedback filing. They also cover the curriculum: every worked example must run, and every exercise's reference solution must pass while its starter code fails. A smoke test clicks through every stage of every lesson. CI runs everything on each push and pull request.
@@ -103,7 +126,8 @@ The tests check the quantum engine, the sandbox (including escape attempts), the
 ## Project structure
 
 ```text
-app.py                               Streamlit / Hugging Face entry point
+Dockerfile, scripts/serve.py          Node frontend + private Python API deployment
+app.py                               Legacy Streamlit entry point (not deployed)
 frontend/streamlit_app.py            The learning app: pages, lesson steps, Content Studio
 frontend/learning_content.py         Curriculum, rubrics, presets, practice, glossary
 frontend/intuition.py                Interactive intuition widgets and SVG visuals
@@ -122,11 +146,15 @@ backend/core/feedback.py             Files tester feedback as GitHub issues
 backend/core/qiskit_thread.py        Runs in-app Qiskit work on one thread
 backend/core/teaching_assistant.py   Code review and tutoring
 backend/main.py, backend/routers/    Optional FastAPI service (simulation, execution, tutor)
-web/                                 Older standalone Next.js client (not deployed)
+web/                                 Primary Node.js / Next.js frontend
+backend/routers/course.py            Exercise checking, reflection and course API
+scripts/export_course.py             Shared curriculum → bundled web JSON
 tests/                               Python tests
 ```
 
-The optional API runs with `uvicorn backend.main:app --reload --port 8000`. The older Next.js client in `web/` runs with `npm install && npm run dev` from that folder.
+The legacy Streamlit source remains temporarily for regression tests. Install `requirements-dev.txt` to run those tests; Streamlit is excluded from the production runtime.
+
+The web migration retains all 16 lessons, six stages, quizzes, circuit experiments, Qiskit examples and exercises, reflections, glossary, notebook JSON/Markdown export, and a session-only JSON Content Studio. Legacy notebooks can be imported from their JSON downloads. Intuition widgets run in the browser: angle and phase dials, gate experiments, shot sampling, basis changes, bit order, entanglement, teleportation, Deutsch, Grover, depolarizing noise and parameter-shift training. Hardware routing uses Qiskit through the API. Bloch diagrams use a projected vector and angle controls in place of the old draggable 3D renderer. The original handwritten theme and author form are replaced by accessible system typography and a JSON content editor.
 
 ## Licence
 
