@@ -11,7 +11,7 @@ import pytest
 from frontend.learning_content import LESSONS
 
 AppTest = pytest.importorskip("streamlit.testing.v1").AppTest
-APP = str(Path(__file__).resolve().parents[1] / "app.py")
+APP = str(Path(__file__).resolve().parents[1] / "frontend" / "streamlit_app.py")
 
 
 def _run(at):

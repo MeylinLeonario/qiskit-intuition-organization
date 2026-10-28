@@ -1,10 +1,4 @@
-import os
-import runpy
-import sys
+"""ASGI entry point for the independently deployed Python backend on Vercel."""
+from backend.main import app
 
-# Set root directory in sys.path
-ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, ROOT)
-
-# Transparently execute the decoupled frontend app
-runpy.run_path(os.path.join(ROOT, "frontend", "streamlit_app.py"))
+__all__ = ["app"]

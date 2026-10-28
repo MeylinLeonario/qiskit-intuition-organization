@@ -1,3 +1,5 @@
+import { readApiResponse } from "@/lib/api-response";
+
 // Only these backend operations are exposed; the upstream URL stays server-side.
 const paths = new Set([
   "health",
@@ -29,10 +31,27 @@ async function proxy(
     return Response.json({ detail: "Request too large" }, { status: 413 });
   }
   try {
-    const base = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(
-      /\/$/,
-      "",
-    );
+    // Browser requests still go through this proxy using the deployed backend URL.
+    const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+    if (!configured && process.env.VERCEL === "1") {
+      return Response.json(
+        {
+          detail: "The quantum service is not configured for this deployment.",
+        },
+        { status: 503 },
+      );
+    }
+    const base = (configured || "http://127.0.0.1:8000").replace(/\/$/, "");
+    const target = new URL(base);
+    if (
+      !["http:", "https:"].includes(target.protocol) ||
+      target.origin === new URL(request.url).origin
+    ) {
+      return Response.json(
+        { detail: "The quantum service configuration is invalid." },
+        { status: 503 },
+      );
+    }
     const upstream = await fetch(`${base}/${route}`, {
       method: request.method,
       headers: { "Content-Type": "application/json" },
@@ -40,13 +59,23 @@ async function proxy(
       cache: "no-store",
       signal: AbortSignal.timeout(60000),
     });
-    return new Response(await upstream.text(), {
-      status: upstream.status,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-    });
+    try {
+      const data = await readApiResponse(upstream);
+      return Response.json(data, { headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      return Response.json(
+        {
+          detail:
+            error instanceof Error
+              ? error.message
+              : "The quantum service request failed.",
+        },
+        {
+          status: upstream.ok ? 502 : upstream.status,
+          headers: { "Cache-Control": "no-store" },
+        },
+      );
+    }
   } catch {
     return Response.json(
       {
