@@ -95,8 +95,8 @@ function qiskitCode(numQubits, gates) {
       lines.push(`qc.${gate.toLowerCase()}(${operation.target})`);
     } else if (["RX", "RY", "RZ"].includes(gate)) {
       lines.push(`qc.${gate.toLowerCase()}(${(operation.angle ?? Math.PI / 2).toFixed(6)}, ${operation.target})`);
-    } else if (gate === "CNOT") {
-      lines.push(`qc.cx(${operation.control ?? 0}, ${operation.target})`);
+    } else if (gate === "CNOT" || gate === "CZ") {
+      lines.push(`qc.${gate === "CZ" ? "cz" : "cx"}(${operation.control ?? 0}, ${operation.target})`);
     }
   }
   lines.push("", "state = Statevector.from_instruction(qc)", "print(qc.draw(output='text'))", "print(state.probabilities_dict())");
@@ -111,6 +111,8 @@ export function simulateCircuit(numQubits, gates, _noisy = false) {
     const gate = String(operation.gate).toUpperCase();
     if (gate === "CNOT") {
       statevector = applyCnot(statevector, operation.control ?? Math.max(0, 1 - operation.target), operation.target);
+    } else if (gate === "CZ") {
+      statevector = statevector.map((a, i) => (i & (1 << operation.control)) && (i & (1 << operation.target)) ? C(-a.r, -a.i) : a);
     } else {
       statevector = applySingleQubit(statevector, operation.target, gateMatrix(gate, operation.angle));
     }
