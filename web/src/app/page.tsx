@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AccountMenu } from "@/components/auth-provider";
 import CircuitLab from "@/components/circuit-lab";
 import IntuitionWidget from "@/components/intuition-widget";
 import { course, parseContent } from "@/lib/course";
@@ -160,6 +161,7 @@ export default function Home() {
             <small>{brand.tagline}</small>
           </div>
         </div>
+        <AccountMenu />
         <nav aria-label="Primary navigation">
           {[
             ["course", "Learning path"],
