@@ -71,7 +71,7 @@ npm run dev
 Open http://localhost:3000. The learning path, simulator, notebook and glossary
 work without the Python service; executing Qiskit and checking exercises or
 reflections require it. Set `NEXT_PUBLIC_API_URL` in `web/.env.local` when Python runs
-elsewhere (default: `http://127.0.0.1:8000`). This variable is server-only.
+elsewhere (default: `http://127.0.0.1:8000`). This is the public backend origin, not a secret.
 
 Production: `cd web && npm run build && npm start`, alongside the Python service.
 The root Dockerfile packages both processes and exposes the Node frontend on
@@ -93,6 +93,22 @@ Everything is optional. On Hugging Face, add these as **Space secrets**. Locally
 ## Deployment
 
 Every push to `main` runs CI. It also uploads the app to the Hugging Face Space through `.github/workflows/sync-to-huggingface.yml`, which needs an `HF_TOKEN` repository secret with write access to the Space. The Space uses the Docker SDK and the root Dockerfile to start the Node frontend and private Python service.
+
+### Separate Vercel deployments
+
+For the frontend project, use **Root Directory: `web`**, the Next.js preset and
+Node.js 22+. Set `NEXT_PUBLIC_API_URL` to the Python deployment's HTTPS
+origin, then redeploy the frontend. This URL is public and contains no credentials.
+Do not point it at the frontend itself; `127.0.0.1` only works when both services
+run together locally or in the Docker image.
+
+For the backend project, use the **repository root** and the FastAPI preset.
+`app.py` exports the FastAPI application; it does not import Streamlit.
+Deploy the same branch to both projects so the `/course/routing` endpoint exists
+on the Python deployment too. Verify `/health` on the backend first, then
+`/api/health` on the frontend. If Vercel returns a platform 500, inspect the
+backend function logs for its Python startup error; the UI now handles a
+non-JSON platform response without a JSON parsing exception.
 
 ## Editing course content
 
@@ -127,7 +143,7 @@ The tests check the quantum engine, the sandbox (including escape attempts), the
 
 ```text
 Dockerfile, scripts/serve.py          Node frontend + private Python API deployment
-app.py                               Legacy Streamlit entry point (not deployed)
+app.py                               ASGI backend entry point for Vercel
 frontend/streamlit_app.py            The learning app: pages, lesson steps, Content Studio
 frontend/learning_content.py         Curriculum, rubrics, presets, practice, glossary
 frontend/intuition.py                Interactive intuition widgets and SVG visuals
@@ -154,7 +170,7 @@ tests/                               Python tests
 
 The legacy Streamlit source remains temporarily for regression tests. Install `requirements-dev.txt` to run those tests; Streamlit is excluded from the production runtime.
 
-The web migration retains all 16 lessons, six stages, quizzes, circuit experiments, Qiskit examples and exercises, reflections, glossary, notebook JSON/Markdown export, and a session-only JSON Content Studio. Legacy notebooks can be imported from their JSON downloads. Intuition widgets run in the browser: angle and phase dials, gate experiments, shot sampling, basis changes, bit order, entanglement, teleportation, Deutsch, Grover, depolarizing noise and parameter-shift training. Hardware routing uses Qiskit through the API. Bloch diagrams use a projected vector and angle controls in place of the old draggable 3D renderer. The original handwritten theme and author form are replaced by accessible system typography and a JSON content editor.
+The web migration retains all 16 lessons, six stages, quizzes, circuit experiments, Qiskit examples and exercises, reflections, glossary, notebook JSON/Markdown export, and a session-only JSON Content Studio. Legacy notebooks can be imported from their JSON downloads. Intuition widgets run in the browser: angle and phase dials, gate experiments, shot sampling, basis changes, bit order, entanglement, teleportation, Deutsch, Grover, depolarizing noise and parameter-shift training. Hardware routing uses Qiskit through the API. Bloch diagrams use a projected vector and angle controls in place of the old draggable 3D renderer. The notebook theme uses the original cream ruled paper, red margin, punched binding and self-hosted handwriting fonts. Easy reading switches to Atkinson Hyperlegible. The author form is a JSON content editor.
 
 ## Licence
 
