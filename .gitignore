@@ -51,10 +51,3 @@ Qiskit-Intuition/
 !.env.example
 
 work/
-
-# Private authentication data
-data/
-*.sqlite
-*.sqlite3
-*.sqlite3-*
-*.db-*
