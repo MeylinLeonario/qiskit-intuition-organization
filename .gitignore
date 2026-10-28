@@ -47,3 +47,7 @@ Qiskit-Intuition/
 # Local agent tooling state
 .swarm/
 .claude-flow/
+
+!.env.example
+
+work/

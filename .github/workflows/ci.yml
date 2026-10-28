@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, refactor/frontend]
   pull_request:
 
 jobs:
@@ -15,7 +15,9 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest
+        run: pip install -r requirements-dev.txt
+      - name: Check published web curriculum
+        run: python scripts/export_course.py --check
       - name: Lint
         run: ruff check .
       - name: Test
@@ -34,5 +36,6 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
-      - run: node tests/simulator.test.mjs
+      - run: npm test
+      - run: npm run lint
       - run: npm run build

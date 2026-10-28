@@ -1,5 +1,5 @@
 export type Complex = { r: number; i: number };
-export type GateName = "H" | "X" | "Y" | "Z" | "S" | "T" | "RX" | "RY" | "RZ" | "CNOT";
+export type GateName = "H" | "X" | "Y" | "Z" | "S" | "T" | "RX" | "RY" | "RZ" | "CNOT" | "CZ";
 export type GateOp = { id: string; gate: GateName; target: number; control?: number; angle?: number };
 export type BlochReadout = { x: number; y: number; z: number; purity: number; theta: number; phi: number };
 export type SimulationResult = {

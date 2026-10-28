@@ -1,0 +1,5 @@
+-r requirements.txt
+# Retained only for legacy UI regression tests during the migration.
+streamlit>=1.44.0,<2.0.0
+pytest>=8.0.0
+httpx>=0.27.0

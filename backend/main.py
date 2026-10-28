@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # Load environment variables
 load_dotenv()
 
-from backend.routers import agents, execute, simulate
+from backend.routers import agents, course, execute, simulate
 
 app = FastAPI(
     title="Qiskit Intuition Lab API",
@@ -25,6 +25,7 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8501",
     "http://127.0.0.1:8501",
+    "https://qiskit-intuition-organization.vercel.app/"
 ]
 
 extra_origins = [
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 # Mount routers
+app.include_router(course.router, tags=["course"])
 app.include_router(simulate.router, tags=["simulation"])
 app.include_router(execute.router, tags=["execution"])
 app.include_router(agents.router, prefix="/agent", tags=["agents"])

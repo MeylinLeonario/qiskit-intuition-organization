@@ -263,3 +263,28 @@ button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
   .workspace-switch { width: 100%; }
   .workspace-switch button { flex: 1; }
 }
+
+/* Full course and notebook, served by Node.js. */
+.course-main { width: 100%; min-width: 0; max-width: 1200px; padding: 40px clamp(16px, 4vw, 56px); }
+.course-main h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+.course-main p, .course-main li { line-height: 1.75; }
+.course-main .panel { margin: 20px 0; padding: 24px; }
+.course-main pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #edf2f4; padding: 18px; border-radius: 8px; }
+.course-main textarea { width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+.course-main .code-editor { color: #eef5f6; background: #17212b; }
+.course-controls, .course-stages { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 20px 0; }
+.course-controls label { display: grid; gap: 6px; }
+.course-controls select, .course-controls input { padding: 8px; max-width: 180px; }
+.course-stages button { padding: 10px 12px; }
+.course-quiz { border: 1px solid var(--line); border-radius: 8px; }
+.course-quiz label { display: flex; gap: 12px; margin: 16px; }
+.course-main dt { margin-top: 14px; font-weight: 700; }
+.course-notes { display: block; }
+.course-lab figure { display: inline-block; margin: 8px; max-width: 220px; }
+.site-sidebar a { display: block; padding: 12px; color: #dcebf0; }
+.site-sidebar progress { width: 100%; accent-color: var(--teal); }
+.plain-reading { font-size: 18px; line-height: 1.8; }
+.course-loading { padding: 60px; }
+.course-main img { max-width: 100%; }
+@media(max-width: 760px) { .course-main { padding: 20px 14px; } .course-main .panel { padding: 16px; } }
+input[type="checkbox"], input[type="radio"] { width: auto; min-height: auto; accent-color: var(--teal); }
