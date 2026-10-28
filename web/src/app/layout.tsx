@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./notebook.css";
-import "./auth.css";
-import { AuthProvider } from "@/components/auth-provider";
 
 export const metadata: Metadata = {
   title: "Qiskit Intuition — Learn quantum computing",
@@ -17,9 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

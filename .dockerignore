@@ -12,10 +12,3 @@ venv
 **/.env.*
 .streamlit
 work
-
-data
-**/*.sqlite
-**/*.sqlite3
-**/*.sqlite3-*
-**/*.db
-**/*.db-*
