@@ -32,7 +32,7 @@ Turso through SQLAlchemy's libSQL dialect, connecting directly to the hosted
 database with TLS. Avatars are database blobs rather than filesystem uploads.
 
 Create a Turso database and a database access token in your own account. Configure
-these environment variables on the backend project, never in client code:
+these environment variables on the **backend project**, never in client code:
 
 | Variable | Value |
 | --- | --- |
