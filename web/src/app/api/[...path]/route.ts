@@ -29,7 +29,7 @@ async function proxy(
     return Response.json({ detail: "Request too large" }, { status: 413 });
   }
   try {
-    const base = (process.env.BACKEND_URL || "http://127.0.0.1:8000").replace(
+    const base = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(
       /\/$/,
       "",
     );

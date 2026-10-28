@@ -22,7 +22,7 @@ COPY frontend/learning_content.py frontend/site_content.json frontend/
 COPY scripts/serve.py scripts/serve.py
 COPY --from=web-build /build/.next/standalone/ web/
 COPY --from=web-build /build/.next/static/ web/.next/static/
-ENV PORT=7860 HOSTNAME=0.0.0.0 BACKEND_URL=http://127.0.0.1:8000 NEXT_TELEMETRY_DISABLED=1
+ENV PORT=7860 HOSTNAME=0.0.0.0 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000 NEXT_TELEMETRY_DISABLED=1
 EXPOSE 7860
 RUN useradd --create-home --uid 1000 app && chmod -R a+rX /app
 USER app

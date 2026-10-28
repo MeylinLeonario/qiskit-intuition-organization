@@ -70,7 +70,7 @@ npm run dev
 
 Open http://localhost:3000. The learning path, simulator, notebook and glossary
 work without the Python service; executing Qiskit and checking exercises or
-reflections require it. Set `BACKEND_URL` in `web/.env.local` when Python runs
+reflections require it. Set `NEXT_PUBLIC_API_URL` in `web/.env.local` when Python runs
 elsewhere (default: `http://127.0.0.1:8000`). This variable is server-only.
 
 Production: `cd web && npm run build && npm start`, alongside the Python service.
