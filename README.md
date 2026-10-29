@@ -31,10 +31,12 @@ Most quantum courses open with linear algebra. This one opens with a picture you
 
 | Unit | Lessons |
 | --- | --- |
-| One qubit | What is a qubit? · Flipping with X · Measurement and shots · Superposition with H · Rotations · Phase · Interference · Measuring in other directions |
-| Many qubits | Many qubits and bit order · Entanglement · Teleportation |
-| Algorithms | Phase kickback: Deutsch's algorithm · Grover search |
+| One qubit | Why quantum computers? · What is a qubit? · Flipping with X · Measurement and shots · Superposition with H · Rotations · Phase · Interference · Measuring in other directions |
+| Many qubits | Many qubits and bit order · Entanglement · Why you can't copy a qubit · Teleportation · Superdense coding |
+| Algorithms | Phase kickback: Deutsch's algorithm · A secret string in one question (Bernstein–Vazirani) · Grover search · The quantum Fourier transform · Phase estimation |
 | Real hardware & beyond | Noise and transpilation · Running on a real chip · Trainable circuits and quantum ML |
+
+Every lesson opens with an everyday analogy — what it captures and where it breaks — and ends with a one-line "remember it as" takeaway.
 
 ## Features
 
@@ -185,7 +187,7 @@ tests/                               Python tests
 
 The legacy Streamlit source remains temporarily for regression tests. Install `requirements-dev.txt` to run those tests; Streamlit is excluded from the production runtime.
 
-The web migration retains all 16 lessons, six stages, quizzes, circuit experiments, Qiskit examples and exercises, reflections, glossary, notebook JSON/Markdown export, and a session-only JSON Content Studio. Legacy notebooks can be imported from their JSON downloads. Intuition widgets run in the browser: angle and phase dials, gate experiments, shot sampling, basis changes, bit order, entanglement, teleportation, Deutsch, Grover, depolarizing noise and parameter-shift training. Hardware routing uses Qiskit through the API. Bloch diagrams use a projected vector and angle controls in place of the old draggable 3D renderer. The notebook theme uses the original cream ruled paper, red margin, punched binding and self-hosted handwriting fonts. Easy reading switches to Atkinson Hyperlegible. The author form is a JSON content editor.
+The web migration retains all lessons (22 now), six stages, quizzes, circuit experiments, Qiskit examples and exercises, reflections, glossary, notebook JSON/Markdown export, and a session-only JSON Content Studio. Legacy notebooks can be imported from their JSON downloads. Intuition widgets run in the browser: angle and phase dials, gate experiments, shot sampling, basis changes, bit order, entanglement, teleportation, Deutsch, Grover, depolarizing noise and parameter-shift training. Hardware routing uses Qiskit through the API. Bloch diagrams use a projected vector and angle controls in place of the old draggable 3D renderer. The notebook theme uses the original cream ruled paper, red margin, punched binding and self-hosted handwriting fonts. Easy reading switches to Atkinson Hyperlegible. The author form is a JSON content editor.
 
 ## Licence
 

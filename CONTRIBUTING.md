@@ -8,16 +8,18 @@ Lessons live in `frontend/learning_content.py` as plain dictionaries. Each lesso
 
 | Stage | Fields |
 | --- | --- |
-| 1. Intuition | `intuition` (plain-language paragraphs, `**bold**` allowed), `widget` (interactive "feel it" widget) |
+| 1. Intuition | an analogy in `ANALOGIES` (`title`, `picture`, what it `captures`, where it `breaks`), `intuition` (plain-language paragraphs, `**bold**` allowed), `widget` (interactive "feel it" widget) |
 | 2. Predict | `quiz` — `question`, `options`, `answer` (index), and one `explanations` entry per option |
 | 3. Experiment | `preset` (a key of `PRESETS`), `try_this`, optional `noise_toggle` |
 | 4. Formalize | `explanation`, `latex`, `misconception` |
 | 5. Code it | `qiskit` (`intro`, runnable `code`, line-by-line `notes`) and `code_task` |
-| 6. Reflect | `checkpoint`, `practice` (index into `PRACTICE`), and a rubric in `RUBRICS`: `key_ideas` (idea, lower-case cue words, hint) and `watch_for` (cues, note) for instant feedback |
+| 6. Reflect | `takeaway` (one line, in `ANALOGIES`), `checkpoint`, `practice` (index into `PRACTICE`), and a rubric in `RUBRICS`: `key_ideas` (idea, lower-case cue words, hint) and `watch_for` (cues, note) for instant feedback |
 
 Guidelines:
 
 - **Picture before formula.** The intuition stage should be understandable without any equations.
+- **Honest analogies.** Every analogy says where it breaks, so learners know when to stop trusting it.
+- **Refer to lessons by id.** Write `{lesson:interference}`, not "Lesson 8"; numbers are filled in from each lesson's position, so inserting a lesson never breaks a reference.
 - **Wrong answers teach.** Every quiz option needs an explanation of why it is tempting or wrong.
 - **One new Qiskit idea per lesson.** The worked example should introduce a single API and run in the sandbox.
 - **Auto-checked exercises.** A `code_task` has a `starter`, a reference `solution` that leaves its circuit in `qc`, an optional `match` (`"state"` compares up to global phase, `"probs"` compares the measurement distribution), and optional `required_ops` (e.g. `["h", "cx"]`).
