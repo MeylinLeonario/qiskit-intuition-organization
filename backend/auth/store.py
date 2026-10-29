@@ -47,6 +47,16 @@ class User(Base):
     avatar_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
 
+class UserNotebook(Base):
+    __tablename__ = "auth_notebooks"
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("auth_users.id", ondelete="CASCADE"), primary_key=True
+    )
+    payload: Mapped[str] = mapped_column(Text)
+    revision: Mapped[int] = mapped_column(Integer)
+    updated_at: Mapped[int] = mapped_column(Integer)
+
+
 class AuthSession(Base):
     __tablename__ = "auth_sessions"
     id: Mapped[str] = mapped_column(String(128), primary_key=True)
