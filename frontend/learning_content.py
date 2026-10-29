@@ -1000,6 +1000,85 @@ LESSONS = [
         "checkpoint": "Why can't Bob use teleportation to receive a message before Alice's bits arrive?",
         "practice": 2,
     },
+    {
+        "id": "superdense",
+        "unit": "many-qubits",
+        "title": "Superdense coding: two bits in one qubit",
+        "eyebrow": "Multi-qubit systems",
+        "duration": "14 min",
+        "summary": "Teleportation spends two bits to move one qubit. Superdense coding runs the trade the other way: with a shared Bell pair, sending one qubit delivers two bits.",
+        "intuition": [
+            "Alice and Bob share a Bell pair again: Alice holds q0, Bob holds q1. Alice wants to send Bob two ordinary bits, but she's only allowed to send him one qubit.",
+            "She twists her half in one of four ways — nothing, X, Z, or both. Each twist turns the shared pair into a different one of the four **Bell states**, and those four can be told apart perfectly, as long as you look at both qubits together.",
+            "Alice posts her qubit to Bob. Now he holds both halves: he undoes the entangling (CNOT, then H) and reads two bits with certainty. One qubit travelled and two bits arrived — the second rode in on the entanglement they set up earlier.",
+        ],
+        "widget": {
+            "type": "gate_play",
+            "gates": ["X", "Z"],
+            "caption": "Alice's twists are X and Z on her half. Try each combination and check that Bob reads a different two-bit message every time.",
+        },
+        "quiz": {
+            "question": "Alice applies only Z to her half of the Bell pair and sends it. After Bob's CNOT and H, what does he read (written q1 q0)?",
+            "options": ["00", "01", "10", "11"],
+            "answer": 1,
+            "explanations": [
+                "That's the message for \"no twist\".",
+                "Right. Z flips the sign of the |11⟩ part of the pair; Bob's CNOT and H turn that sign into a 1 on q0.",
+                "That's what X gives: it changes which pairs agree, which shows up on q1.",
+                "That takes both X and Z.",
+            ],
+        },
+        "preset": "Superdense coding (sends 11)",
+        "try_this": [
+            "The example sends the message 11: Alice applies X and Z, and Bob's CNOT and H read 11 with certainty.",
+            "Remove Alice's **Z**. Which message arrives now?",
+            "Remove both twists and Bob reads 00. Four twists, four messages: two bits.",
+        ],
+        "objectives": [
+            "Encode two classical bits by acting on one half of a Bell pair.",
+            "Explain why the four Bell states can be told apart.",
+            "Build superdense coding in Qiskit.",
+        ],
+        "explanation": [
+            "The four Bell states are |Φ±⟩ = (|00⟩ ± |11⟩)/√2 and |Ψ±⟩ = (|01⟩ ± |10⟩)/√2. They're orthogonal, so a single joint measurement tells them apart. Alice's nothing, X, Z or both, applied to her qubit only, turns |Φ⁺⟩ into each of them in turn.",
+            "Bob's CNOT followed by H is the circuit that made the pair, run backwards, so it rotates the four Bell states onto |00⟩, |01⟩, |10⟩ and |11⟩. On its own, one qubit can carry at most one bit (Holevo's bound); the extra bit is paid for by the entanglement shared in advance.",
+        ],
+        "equation": "Alice applies X^b1 then Z^b0 to her half of |Phi+>; Bob's CNOT, H read b1 b0",
+        "latex": r"Z^{b_0}X^{b_1}\ \text{on Alice's half of}\ |\Phi^+\rangle \;\xrightarrow{\ \mathrm{CNOT},\,H\ }\; |b_1 b_0\rangle",
+        "misconception": "Superdense coding doesn't beat light or squeeze bits out of nothing. The Bell pair had to be shared beforehand, and Alice's qubit still has to travel to Bob.",
+        "qiskit": {
+            "intro": "One function builds the whole protocol for any two-bit message: make the pair, apply Alice's twists, then Bob's decoding.",
+            "code": _IMPORTS
+            + "from qiskit.quantum_info import Statevector\n\n"
+            "def superdense(message):          # message 'b1b0', read as q1 q0\n"
+            "    qc = QuantumCircuit(2)\n"
+            "    qc.h(0)\n"
+            "    qc.cx(0, 1)                   # shared Bell pair: q0 Alice, q1 Bob\n"
+            "    if message[0] == '1':\n"
+            "        qc.x(0)                   # Alice's twists\n"
+            "    if message[1] == '1':\n"
+            "        qc.z(0)\n"
+            "    qc.cx(0, 1)                   # Bob undoes the pair...\n"
+            "    qc.h(0)                       # ...and reads two bits\n"
+            "    return qc\n\n"
+            "for message in ['00', '01', '10', '11']:\n"
+            "    print(message, '->', Statevector(superdense(message)).probabilities_dict(decimals=3))\n",
+            "notes": [
+                ("qc.x(0) / qc.z(0)", "Alice's twists, applied to her own qubit only."),
+                ("qc.cx(0, 1); qc.h(0)", "Bob's decoding: the Bell-pair circuit run backwards."),
+                ("probabilities_dict()", "Every message arrives with certainty."),
+            ],
+        },
+        "code_task": {
+            "prompt": "Send the message 10 (q1 = 1, q0 = 0): finish the protocol in `qc` with Alice's twist and Bob's decoding.",
+            "starter": _IMPORTS + "\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\n# Alice's twist\n\n# Bob's decoding\n",
+            "solution": _IMPORTS + "qc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\nqc.x(0)\nqc.cx(0, 1)\nqc.h(0)\n",
+            "required_ops": ["cx", "x"],
+            "hint": "The first bit (q1) is sent with X. Then decode with `qc.cx(0, 1)` and `qc.h(0)`.",
+        },
+        "checkpoint": "One qubit travelled, yet two bits arrived. Where did the second bit come from?",
+        "practice": 2,
+    },
     # ------------------------------------------------------------------ Unit 3
     {
         "id": "deutsch",
@@ -1553,6 +1632,17 @@ PRESETS = {
             {"gate": "CNOT", "target": 1, "control": 0},
         ],
     },
+    "Superdense coding (sends 11)": {
+        "qubits": 2,
+        "gates": [
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "X", "target": 0, "control": None},
+            {"gate": "Z", "target": 0, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "H", "target": 0, "control": None},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -1763,6 +1853,13 @@ ANALOGIES = {
         "The copier works on 0 and 1 but entangles everything in between, and the original loses its own \"shade\".",
         "Grey paper looks grey to anyone. A qubit's shade can't be seen at all — and that's exactly why a working copier would be so powerful, and why it can't exist.",
         "No circuit copies an unknown state: CNOT copies 0 and 1, but entangles everything in between.",
+    ),
+    "superdense": _analogy(
+        "A safe with two keys",
+        "Bob already holds one key to a safe. Alice turns her key to one of four positions and posts it to him. With both keys in his hands, Bob can tell which of the four positions she chose.",
+        "A shared resource is set up in advance, only one object travels, and reading the message needs both halves together.",
+        "You could look at a posted key and see its position. Alice's qubit on its own looks completely random — it's half of an entangled pair — so anyone who intercepts it learns nothing. The message exists only in the pair.",
+        "With a shared Bell pair, sending one qubit delivers two bits — the second rides on the entanglement.",
     ),
 }
 
@@ -1978,6 +2075,19 @@ RUBRICS = {
         "watch_for": [
             _watch(["can't make two", "can't prepare", "only one qubit can"],
                    "you can prepare many qubits in the same known state — it's copying an unknown one that's impossible."),
+        ],
+    },
+    "superdense": {
+        "key_ideas": [
+            _idea("The Bell pair was shared in advance", ["bell pair", "entangl", "shared", "beforehand", "in advance", "earlier"],
+                  "say what Alice and Bob set up before any message was sent."),
+            _idea("Four twists give four distinguishable Bell states", ["four", "bell state", "distinguish", "orthogonal", "tell apart", "different"],
+                  "explain why Bob can tell the four twists apart."),
+            _idea("Bob reads both qubits together", ["both qubits", "both halves", "together", "joint", "pair"],
+                  "the message only appears when Bob has both halves."),
+        ],
+        "watch_for": [
+            _watch(["faster than light", "instant"], "nothing travels faster than light — Alice's qubit still has to reach Bob."),
         ],
     },
 }
