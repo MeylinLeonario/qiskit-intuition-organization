@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { AccountMenu } from "@/components/auth-provider";
 import { api } from "@/services/api";
 import CircuitLab from "@/components/circuit-lab";
 import { course } from "@/lib/course";
@@ -452,6 +453,7 @@ export default function Home() {
           <span className="brand-mark">Q</span>
           <strong>Qiskit Intuition</strong>
         </div>
+        <AccountMenu />
         <nav aria-label="Primary navigation">
           <Link href="/">Learning path · 16 lessons</Link>
           <Link href="/playground">Playground & code coach</Link>
