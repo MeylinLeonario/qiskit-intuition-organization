@@ -472,8 +472,20 @@ async def configuration_error_handler(request: Request, error: Exception):
         # These configuration messages name missing variables, never their values.
         logging.getLogger(__name__).error("Authentication configuration: %s", error)
     else:
+        from backend.auth.diagnostics import (
+            database_diagnostic,
+            failure_location,
+            failure_stage,
+        )
+
+        code, hint = database_diagnostic(error)
         logging.getLogger(__name__).error(
-            "Authentication database failure (%s)", type(error).__name__
+            "Authentication database failure (%s) code=%s stage=%s location=%s hint=%s",
+            type(error).__name__,
+            code,
+            failure_stage(error),
+            failure_location(error),
+            hint,
         )
     return JSONResponse(
         {

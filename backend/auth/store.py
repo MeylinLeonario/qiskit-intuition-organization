@@ -18,6 +18,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.schema import CreateIndex, CreateTable
 
+from backend.auth.diagnostics import database_operation
+
 
 class AuthConfigurationError(RuntimeError):
     pass
@@ -130,15 +132,21 @@ def engine_for(url: str, token: str | None = None):
 
         @event.listens_for(engine, "connect")
         def sqlite_options(connection, _):
-            connection.execute("PRAGMA foreign_keys=ON")
-            connection.execute("PRAGMA busy_timeout=15000")
+            with database_operation("configure-connection"):
+                connection.execute("PRAGMA foreign_keys=ON")
+                # busy_timeout configures the local SQLite connection, not an
+                # HTTP libSQL server. Remote requests use the driver's transport.
+                if sqlite:
+                    connection.execute("PRAGMA busy_timeout=15000")
 
     # Multiple Vercel cold starts can initialize the schema concurrently.
-    with engine.begin() as connection:
-        for table in Base.metadata.sorted_tables:
-            connection.execute(CreateTable(table, if_not_exists=True))
-            for index in table.indexes:
-                connection.execute(CreateIndex(index, if_not_exists=True))
+    with database_operation("connect"):
+        with engine.begin() as connection:
+            with database_operation("initialize-schema"):
+                for table in Base.metadata.sorted_tables:
+                    connection.execute(CreateTable(table, if_not_exists=True))
+                    for index in table.indexes:
+                        connection.execute(CreateIndex(index, if_not_exists=True))
     return engine
 
 
@@ -159,15 +167,21 @@ def database():
             raise AuthConfigurationError(
                 "TURSO_DATABASE_URL must contain only the database origin"
             )
-        token = os.getenv("TURSO_AUTH_TOKEN")
+        token = os.getenv("TURSO_AUTH_TOKEN", "").strip()
         if not token:
             raise AuthConfigurationError(
                 "TURSO_AUTH_TOKEN is required for hosted SQLite"
             )
-        engine = engine_for(f"sqlite+libsql://{parsed.netloc}?secure=true", token)
+        if token.startswith(("'", '"')) or any(char.isspace() for char in token):
+            raise AuthConfigurationError(
+                "TURSO_AUTH_TOKEN must be pasted without quotes, spaces or line breaks"
+            )
+        with database_operation("connect"):
+            engine = engine_for(f"sqlite+libsql://{parsed.netloc}?secure=true", token)
     else:
         engine = engine_for(
             os.getenv("AUTH_DATABASE_URL", "sqlite:///data/auth.sqlite3")
         )
-    with Session(engine, expire_on_commit=False) as session, session.begin():
-        yield session
+    with database_operation("transaction"):
+        with Session(engine, expire_on_commit=False) as session, session.begin():
+            yield session
