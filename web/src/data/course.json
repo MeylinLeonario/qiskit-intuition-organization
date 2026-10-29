@@ -2242,8 +2242,146 @@
       "takeaway": "Mark the answer with a sign, reflect about the average, repeat about (π/4)√N times."
     },
     {
-      "id": "hardware",
+      "id": "qft",
+      "unit": "algorithms",
+      "title": "The quantum Fourier transform",
+      "eyebrow": "Algorithms",
+      "duration": "18 min",
+      "summary": "Your ear splits a chord into notes. The quantum Fourier transform splits a repeating pattern in the amplitudes into its rhythms — the step at the heart of Shor's factoring algorithm.",
+      "intuition": [
+        "Play a chord and your ear hears separate notes: it turns one wave into the list of frequencies inside it. That's a **Fourier transform**.",
+        "The **quantum Fourier transform (QFT)** does the same to amplitudes. Feed it a state with a regular rhythm — equal weight on |0⟩ and |2⟩, a pattern that repeats every 2 steps — and the output peaks at the matching frequencies, here 0 and 2.",
+        "Inside, it works like a row of clock hands. Each output qubit sits on the equator and turns at its own speed: half a turn per step, a quarter, an eighth… The whole circuit is H gates plus controlled phase turns. Finding hidden rhythms this way is how Shor's algorithm factors numbers."
+      ],
+      "widget": {
+        "type": "gate_play",
+        "gates": [
+          "H",
+          "S",
+          "T"
+        ],
+        "caption": "The QFT is built from H gates and phase turns of a half, a quarter, an eighth of a turn. H puts an arrow on the equator; S and T turn it like a clock hand."
+      },
+      "quiz": {
+        "question": "A 2-qubit register holds equal amplitudes on |0⟩ and |2⟩ — a pattern that repeats every 2 steps. After the QFT, which outcomes can you measure?",
+        "options": [
+          "Only 0",
+          "0 and 2, 50% each",
+          "All four, 25% each",
+          "1 and 3, 50% each"
+        ],
+        "answer": 1,
+        "explanations": [
+          "Only 0 needs a completely flat input, with all four amplitudes equal.",
+          "Right. A rhythm of period 2 in 4 steps shows up at multiples of 4/2 = 2: outcomes 0 and 2.",
+          "A flat output comes from an input with no rhythm at all, such as a single basis state.",
+          "Those odd frequencies cancel for a pattern that repeats every 2 steps."
+        ]
+      },
+      "preset": "QFT finds a rhythm (period 2)",
+      "try_this": [
+        "The first H spreads q1, so the input is |0⟩ + |2⟩: a pattern with period 2. After the QFT the bars peak at 00 and 10 — outcomes 0 and 2.",
+        "Remove the first gate so the input is plain |0⟩. The QFT spreads it evenly over all four outcomes: a single point contains every frequency.",
+        "The builder spells out the controlled quarter turn with T, RZ and two CNOTs, and the final three CNOTs swap the qubits. In step 5, Qiskit's `cp` and `swap` do the same in two lines."
+      ],
+      "objectives": [
+        "Describe a Fourier transform as finding the rhythms in a pattern.",
+        "Predict the QFT of a periodic state.",
+        "Build the QFT from H and controlled-phase gates in Qiskit."
+      ],
+      "explanation": [
+        "On n qubits (N = 2ⁿ outcomes) the QFT maps |x⟩ to (1/√N) Σₖ e^{2πi·xk/N}|k⟩: every output gets equal weight, with a phase that turns at a rate set by x. Applied to a superposition, those phases interfere, and a pattern with period r piles up on multiples of N/r.",
+        "The circuit is short: on each qubit an H, then controlled phase turns of π/2, π/4, … from the qubits below it, then SWAPs to reverse the bit order — about n²/2 gates. The catch is that the results are amplitudes you can only sample, so the QFT shines inside algorithms like phase estimation and Shor's, not as a faster FFT for your data."
+      ],
+      "equation": "QFT|x> = (1/sqrt(N)) sum_k exp(2 pi i x k / N) |k>",
+      "latex": "\\mathrm{QFT}\\,|x\\rangle = \\frac{1}{\\sqrt{N}}\\sum_{k=0}^{N-1} e^{2\\pi i\\,xk/N}\\,|k\\rangle",
+      "misconception": "The QFT isn't a faster way to Fourier-transform your data. Its outputs are amplitudes you can only sample, so it helps algorithms that need one rhythm, not a whole spectrum.",
+      "qiskit": {
+        "intro": "`qc.cp(angle, control, target)` is a controlled phase turn, the QFT's building block. Qiskit also ships the whole transform as `QFTGate`, so you can check that yours matches.",
+        "code": "import math\nfrom qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFTGate\nfrom qiskit.quantum_info import Operator, Statevector\n\ndef qft2(qc):                  # QFT on qubits 0 and 1\n    qc.h(1)\n    qc.cp(math.pi / 2, 0, 1)   # quarter turn on q1 when q0 is 1\n    qc.h(0)\n    qc.swap(0, 1)              # put the bits back in order\n\nqc = QuantumCircuit(2)\nqc.h(1)                        # input |0> + |2>: period 2\nqft2(qc)\nprint(Statevector(qc).probabilities_dict(decimals=3))\n\nmine = QuantumCircuit(2)\nqft2(mine)\nlibrary = QuantumCircuit(2)\nlibrary.append(QFTGate(2), [0, 1])\nprint('matches QFTGate:', Operator(mine).equiv(Operator(library)))\n",
+        "notes": [
+          [
+            "qc.cp(math.pi / 2, 0, 1)",
+            "Controlled phase: turn q1's arrow a quarter turn, but only in the branch where q0 is 1."
+          ],
+          [
+            "qc.swap(0, 1)",
+            "The QFT produces its bits in reverse order; the SWAP puts them back."
+          ],
+          [
+            "Operator(...).equiv(...)",
+            "Checks that two circuits do exactly the same thing, up to a global phase."
+          ]
+        ]
+      },
+      "code_task": {
+        "prompt": "Apply the QFT to the flat input |0⟩ + |1⟩ + |2⟩ + |3⟩ and keep it in `qc`. A flat pattern has only frequency 0, so the result should be |00⟩.",
+        "starter": "import math\nfrom qiskit import QuantumCircuit\n\nqc = QuantumCircuit(2)\nqc.h([0, 1])   # flat input: every amplitude equal\n\n# apply the QFT here\n",
+        "required_ops": [
+          "cp"
+        ],
+        "hint": "Add the four lines of `qft2` from the worked example after the H gates."
+      },
+      "checkpoint": "Why does a pattern that repeats every 2 steps come out of the QFT as just two peaks?",
+      "practice": 1,
       "number": 18,
+      "key_ideas": [
+        {
+          "idea": "The input repeats every 2 steps",
+          "terms": [
+            "period",
+            "repeat",
+            "rhythm",
+            "pattern",
+            "every 2",
+            "every two"
+          ],
+          "hint": "say what's special about the input: it repeats every 2 steps."
+        },
+        {
+          "idea": "The output peaks at the matching frequencies",
+          "terms": [
+            "frequenc",
+            "peak",
+            "multiple",
+            "0 and 2",
+            "two outcomes"
+          ],
+          "hint": "name the peaks: 0 and 2, the multiples of 4/2."
+        },
+        {
+          "idea": "The other outcomes cancel by interference",
+          "terms": [
+            "interfer",
+            "cancel",
+            "phase",
+            "add up"
+          ],
+          "hint": "explain why 1 and 3 disappear: their amplitudes cancel."
+        }
+      ],
+      "watch_for": [
+        {
+          "terms": [
+            "whole spectrum",
+            "all frequencies at once",
+            "every frequency at once",
+            "read every"
+          ],
+          "note": "a measurement returns one frequency per run — the QFT doesn't hand you the full spectrum."
+        }
+      ],
+      "analogy": {
+        "title": "Hearing the notes in a chord",
+        "picture": "Strike a chord on a piano and your ear doesn't hear one messy wave — it hears three notes. Your inner ear is doing a Fourier transform: turning a wave into the list of frequencies inside it.",
+        "captures": "The QFT turns a repeating pattern in the amplitudes into peaks at its frequencies.",
+        "breaks": "Your ear hears every note at once. A measurement after the QFT gives one frequency per run, picked at random from the peaks — plenty for algorithms that need one rhythm, useless for reading a whole spectrum."
+      },
+      "takeaway": "The QFT turns rhythm into position: a pattern with period r lands on multiples of N/r."
+    },
+    {
+      "id": "hardware",
+      "number": 19,
       "unit": "real-world",
       "title": "Noise and real hardware",
       "eyebrow": "Execution",
@@ -2442,7 +2580,7 @@
       },
       "checkpoint": "Why can the same circuit be noisier on one chip than on another, even if every gate is equally good?",
       "practice": 2,
-      "number": 19,
+      "number": 20,
       "key_ideas": [
         {
           "idea": "Wiring decides which qubits can interact",
@@ -2489,7 +2627,7 @@
     },
     {
       "id": "qml",
-      "number": 20,
+      "number": 21,
       "unit": "real-world",
       "title": "Trainable circuits and quantum ML",
       "eyebrow": "Machine learning",
@@ -3051,6 +3189,67 @@
           "gate": "H",
           "target": 1,
           "control": null
+        }
+      ]
+    },
+    "QFT finds a rhythm (period 2)": {
+      "qubits": 2,
+      "gates": [
+        {
+          "gate": "H",
+          "target": 1,
+          "control": null
+        },
+        {
+          "gate": "H",
+          "target": 1,
+          "control": null
+        },
+        {
+          "gate": "T",
+          "target": 0,
+          "control": null
+        },
+        {
+          "gate": "T",
+          "target": 1,
+          "control": null
+        },
+        {
+          "gate": "CNOT",
+          "target": 1,
+          "control": 0
+        },
+        {
+          "gate": "RZ",
+          "target": 1,
+          "control": null,
+          "angle": -0.7853982
+        },
+        {
+          "gate": "CNOT",
+          "target": 1,
+          "control": 0
+        },
+        {
+          "gate": "H",
+          "target": 0,
+          "control": null
+        },
+        {
+          "gate": "CNOT",
+          "target": 1,
+          "control": 0
+        },
+        {
+          "gate": "CNOT",
+          "target": 0,
+          "control": 1
+        },
+        {
+          "gate": "CNOT",
+          "target": 1,
+          "control": 0
         }
       ]
     }

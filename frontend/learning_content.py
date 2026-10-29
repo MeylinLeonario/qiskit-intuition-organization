@@ -1321,6 +1321,93 @@ LESSONS = [
         "checkpoint": "What job does interference perform between the oracle and the measurement?",
         "practice": 4,
     },
+    {
+        "id": "qft",
+        "unit": "algorithms",
+        "title": "The quantum Fourier transform",
+        "eyebrow": "Algorithms",
+        "duration": "18 min",
+        "summary": "Your ear splits a chord into notes. The quantum Fourier transform splits a repeating pattern in the amplitudes into its rhythms — the step at the heart of Shor's factoring algorithm.",
+        "intuition": [
+            "Play a chord and your ear hears separate notes: it turns one wave into the list of frequencies inside it. That's a **Fourier transform**.",
+            "The **quantum Fourier transform (QFT)** does the same to amplitudes. Feed it a state with a regular rhythm — equal weight on |0⟩ and |2⟩, a pattern that repeats every 2 steps — and the output peaks at the matching frequencies, here 0 and 2.",
+            "Inside, it works like a row of clock hands. Each output qubit sits on the equator and turns at its own speed: half a turn per step, a quarter, an eighth… The whole circuit is H gates plus controlled phase turns. Finding hidden rhythms this way is how Shor's algorithm factors numbers.",
+        ],
+        "widget": {
+            "type": "gate_play",
+            "gates": ["H", "S", "T"],
+            "caption": "The QFT is built from H gates and phase turns of a half, a quarter, an eighth of a turn. H puts an arrow on the equator; S and T turn it like a clock hand.",
+        },
+        "quiz": {
+            "question": "A 2-qubit register holds equal amplitudes on |0⟩ and |2⟩ — a pattern that repeats every 2 steps. After the QFT, which outcomes can you measure?",
+            "options": [
+                "Only 0",
+                "0 and 2, 50% each",
+                "All four, 25% each",
+                "1 and 3, 50% each",
+            ],
+            "answer": 1,
+            "explanations": [
+                "Only 0 needs a completely flat input, with all four amplitudes equal.",
+                "Right. A rhythm of period 2 in 4 steps shows up at multiples of 4/2 = 2: outcomes 0 and 2.",
+                "A flat output comes from an input with no rhythm at all, such as a single basis state.",
+                "Those odd frequencies cancel for a pattern that repeats every 2 steps.",
+            ],
+        },
+        "preset": "QFT finds a rhythm (period 2)",
+        "try_this": [
+            "The first H spreads q1, so the input is |0⟩ + |2⟩: a pattern with period 2. After the QFT the bars peak at 00 and 10 — outcomes 0 and 2.",
+            "Remove the first gate so the input is plain |0⟩. The QFT spreads it evenly over all four outcomes: a single point contains every frequency.",
+            "The builder spells out the controlled quarter turn with T, RZ and two CNOTs, and the final three CNOTs swap the qubits. In step 5, Qiskit's `cp` and `swap` do the same in two lines.",
+        ],
+        "objectives": [
+            "Describe a Fourier transform as finding the rhythms in a pattern.",
+            "Predict the QFT of a periodic state.",
+            "Build the QFT from H and controlled-phase gates in Qiskit.",
+        ],
+        "explanation": [
+            "On n qubits (N = 2ⁿ outcomes) the QFT maps |x⟩ to (1/√N) Σₖ e^{2πi·xk/N}|k⟩: every output gets equal weight, with a phase that turns at a rate set by x. Applied to a superposition, those phases interfere, and a pattern with period r piles up on multiples of N/r.",
+            "The circuit is short: on each qubit an H, then controlled phase turns of π/2, π/4, … from the qubits below it, then SWAPs to reverse the bit order — about n²/2 gates. The catch is that the results are amplitudes you can only sample, so the QFT shines inside algorithms like phase estimation and Shor's, not as a faster FFT for your data.",
+        ],
+        "equation": "QFT|x> = (1/sqrt(N)) sum_k exp(2 pi i x k / N) |k>",
+        "latex": r"\mathrm{QFT}\,|x\rangle = \frac{1}{\sqrt{N}}\sum_{k=0}^{N-1} e^{2\pi i\,xk/N}\,|k\rangle",
+        "misconception": "The QFT isn't a faster way to Fourier-transform your data. Its outputs are amplitudes you can only sample, so it helps algorithms that need one rhythm, not a whole spectrum.",
+        "qiskit": {
+            "intro": "`qc.cp(angle, control, target)` is a controlled phase turn, the QFT's building block. Qiskit also ships the whole transform as `QFTGate`, so you can check that yours matches.",
+            "code": "import math\n"
+            + _IMPORTS
+            + "from qiskit.circuit.library import QFTGate\n"
+            "from qiskit.quantum_info import Operator, Statevector\n\n"
+            "def qft2(qc):                  # QFT on qubits 0 and 1\n"
+            "    qc.h(1)\n"
+            "    qc.cp(math.pi / 2, 0, 1)   # quarter turn on q1 when q0 is 1\n"
+            "    qc.h(0)\n"
+            "    qc.swap(0, 1)              # put the bits back in order\n\n"
+            "qc = QuantumCircuit(2)\n"
+            "qc.h(1)                        # input |0> + |2>: period 2\n"
+            "qft2(qc)\n"
+            "print(Statevector(qc).probabilities_dict(decimals=3))\n\n"
+            "mine = QuantumCircuit(2)\n"
+            "qft2(mine)\n"
+            "library = QuantumCircuit(2)\n"
+            "library.append(QFTGate(2), [0, 1])\n"
+            "print('matches QFTGate:', Operator(mine).equiv(Operator(library)))\n",
+            "notes": [
+                ("qc.cp(math.pi / 2, 0, 1)", "Controlled phase: turn q1's arrow a quarter turn, but only in the branch where q0 is 1."),
+                ("qc.swap(0, 1)", "The QFT produces its bits in reverse order; the SWAP puts them back."),
+                ("Operator(...).equiv(...)", "Checks that two circuits do exactly the same thing, up to a global phase."),
+            ],
+        },
+        "code_task": {
+            "prompt": "Apply the QFT to the flat input |0⟩ + |1⟩ + |2⟩ + |3⟩ and keep it in `qc`. A flat pattern has only frequency 0, so the result should be |00⟩.",
+            "starter": "import math\n" + _IMPORTS + "\nqc = QuantumCircuit(2)\nqc.h([0, 1])   # flat input: every amplitude equal\n\n# apply the QFT here\n",
+            "solution": "import math\n" + _IMPORTS + "qc = QuantumCircuit(2)\nqc.h([0, 1])\nqc.h(1)\nqc.cp(math.pi / 2, 0, 1)\nqc.h(0)\nqc.swap(0, 1)\n",
+            "required_ops": ["cp"],
+            "hint": "Add the four lines of `qft2` from the worked example after the H gates.",
+        },
+        "checkpoint": "Why does a pattern that repeats every 2 steps come out of the QFT as just two peaks?",
+        "practice": 1,
+    },
     # ------------------------------------------------------------------ Unit 4
     {
         "id": "hardware",
@@ -1737,6 +1824,22 @@ PRESETS = {
             {"gate": "H", "target": 1, "control": None},
         ],
     },
+    "QFT finds a rhythm (period 2)": {
+        "qubits": 2,
+        "gates": [
+            {"gate": "H", "target": 1, "control": None},
+            {"gate": "H", "target": 1, "control": None},
+            {"gate": "T", "target": 0, "control": None},
+            {"gate": "T", "target": 1, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "RZ", "target": 1, "control": None, "angle": -0.7853982},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "CNOT", "target": 0, "control": 1},
+            {"gate": "CNOT", "target": 1, "control": 0},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -1961,6 +2064,13 @@ ANALOGIES = {
         "The hidden rule is a parity, and one quantum query replaces n classical ones.",
         "No real panel can be tested \"all at once\" like this: the inputs must be in superposition, and it only works because the hidden rule is a parity that interference can unpick. Most hidden rules aren't.",
         "Phase kickback on every input at once: one query reveals the whole secret string.",
+    ),
+    "qft": _analogy(
+        "Hearing the notes in a chord",
+        "Strike a chord on a piano and your ear doesn't hear one messy wave — it hears three notes. Your inner ear is doing a Fourier transform: turning a wave into the list of frequencies inside it.",
+        "The QFT turns a repeating pattern in the amplitudes into peaks at its frequencies.",
+        "Your ear hears every note at once. A measurement after the QFT gives one frequency per run, picked at random from the peaks — plenty for algorithms that need one rhythm, useless for reading a whole spectrum.",
+        "The QFT turns rhythm into position: a pattern with period r lands on multiples of N/r.",
     ),
 }
 
@@ -2203,6 +2313,20 @@ RUBRICS = {
         "watch_for": [
             _watch(["every x", "checks all", "tries every", "all inputs and"],
                    "it doesn't collect an answer for every input — interference makes the secret the only possible outcome."),
+        ],
+    },
+    "qft": {
+        "key_ideas": [
+            _idea("The input repeats every 2 steps", ["period", "repeat", "rhythm", "pattern", "every 2", "every two"],
+                  "say what's special about the input: it repeats every 2 steps."),
+            _idea("The output peaks at the matching frequencies", ["frequenc", "peak", "multiple", "0 and 2", "two outcomes"],
+                  "name the peaks: 0 and 2, the multiples of 4/2."),
+            _idea("The other outcomes cancel by interference", ["interfer", "cancel", "phase", "add up"],
+                  "explain why 1 and 3 disappear: their amplitudes cancel."),
+        ],
+        "watch_for": [
+            _watch(["whole spectrum", "all frequencies at once", "every frequency at once", "read every"],
+                   "a measurement returns one frequency per run — the QFT doesn't hand you the full spectrum."),
         ],
     },
 }
