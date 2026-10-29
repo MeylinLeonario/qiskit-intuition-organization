@@ -2016,6 +2016,12 @@ GLOSSARY = [
     ("Coupling map", "Which qubits on the chip are wired to each other.", "The graph of physical qubit pairs that support two-qubit gates."),
     ("Noise", "Imperfections that shrink the arrow toward randomness.", "Non-unitary channels such as depolarizing or amplitude damping."),
     ("Parameter", "A knob — a gate angle left as a variable.", "A symbolic value bound to a number before execution."),
+    ("No-cloning", "You can't photocopy an unknown qubit — trying to just entangles the copy with the original.", "No unitary maps |ψ⟩|0⟩ to |ψ⟩|ψ⟩ for every state |ψ⟩."),
+    ("Bell states", "The four maximally entangled two-qubit states — like four dances a pair can share.", "|Φ±⟩ = (|00⟩ ± |11⟩)/√2 and |Ψ±⟩ = (|01⟩ ± |10⟩)/√2, an orthonormal basis."),
+    ("Superdense coding", "Two bits sent by posting one half of a shared entangled pair.", "Encoding two classical bits in one qubit of a pre-shared Bell pair."),
+    ("Quantum Fourier transform", "Hearing the notes in a chord: a repeating pattern becomes peaks at its frequencies.", "QFT|x⟩ = (1/√N) Σₖ e^{2πi·xk/N}|k⟩."),
+    ("Eigenstate", "A state that a gate only turns, without moving it anywhere else.", "U|ψ⟩ = e^{2πiφ}|ψ⟩; φ is the eigenphase."),
+    ("Phase estimation", "Timing a hidden turn with snapshots after 1, 2, 4… ticks.", "Controlled powers of U plus an inverse QFT, returning the binary digits of φ."),
 ]
 
 
