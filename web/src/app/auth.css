@@ -96,3 +96,38 @@
     margin: 20px 16px 40px;
   }
 }
+.notebook-sync {
+  margin: 16px 0 24px;
+  padding: 12px 16px;
+  background: #fffdf5;
+  border: 1px dashed var(--muted);
+}
+.notebook-sync > p {
+  margin: 0 0 8px;
+}
+.notebook-sync button {
+  padding: 8px 12px;
+  margin: 4px 0;
+}
+.notebook-sync details {
+  padding: 12px 0;
+  border-top: 1px dashed var(--muted);
+}
+.notebook-conflict {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.notebook-conflict > div {
+  min-width: 0;
+}
+.notebook-conflict pre {
+  max-height: 250px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+@media (max-width: 600px) {
+  .notebook-conflict {
+    grid-template-columns: 1fr;
+  }
+}

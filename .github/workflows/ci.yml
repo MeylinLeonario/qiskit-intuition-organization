@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, refactor/frontend, feat/authentication]
+    branches: [main, refactor/frontend, feat/authentication, feat/database-connection]
   pull_request:
 
 jobs:
