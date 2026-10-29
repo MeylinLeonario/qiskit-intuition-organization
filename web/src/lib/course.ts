@@ -16,6 +16,8 @@ export type Lesson = {
   try_this: string[];
   checkpoint: string;
   widget: { type: string; caption?: string };
+  analogy?: { title: string; picture: string; captures: string; breaks: string };
+  takeaway?: string;
   quiz?: {
     question: string;
     options: string[];

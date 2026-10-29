@@ -231,6 +231,14 @@ button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
 .message p { margin: 5px 0 0; white-space: pre-wrap; line-height: 1.55; }
 .prompt-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding-top: 2px; }
 
+.analogy-card { margin: 0 0 22px; padding: 20px 23px; border: 1px solid #f0d9b5; border-left: 4px solid var(--amber); border-radius: 13px; background: #fff8ec; }
+.analogy-card h3 { margin: 0 0 8px; font-size: 19px; }
+.analogy-card p { margin: 8px 0 0; color: #35424d; line-height: 1.6; }
+.analogy-card .eyebrow { margin: 0 0 6px; color: var(--amber); }
+.analogy-card details { margin-top: 12px; }
+.analogy-card summary { cursor: pointer; font-weight: 750; color: #6b4300; }
+.takeaway { margin: 0 0 18px; padding: 14px 18px; border-radius: 11px; background: var(--teal-soft); color: #1f3a40; line-height: 1.55; }
+
 @media (max-width: 880px) {
   .site-shell { display: block; }
   .site-sidebar { width: 100%; min-width: 0; min-height: 0; position: static; padding: 18px 20px; }

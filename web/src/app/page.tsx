@@ -242,6 +242,23 @@ export default function Home() {
               <h2>{STAGES[stage]}</h2>
               {stage === 0 && (
                 <>
+                  {lesson.analogy && (
+                    <aside className="analogy-card" aria-label="Everyday analogy">
+                      <p className="eyebrow">Picture it like this</p>
+                      <h3>{lesson.analogy.title}</h3>
+                      <p>{lesson.analogy.picture}</p>
+                      <p>
+                        <strong>What it gets right: </strong>
+                        {lesson.analogy.captures}
+                      </p>
+                      <details>
+                        <summary>
+                          Where does this analogy break? Think first, then open.
+                        </summary>
+                        <p>{lesson.analogy.breaks}</p>
+                      </details>
+                    </aside>
+                  )}
                   <Paragraphs lines={lesson.intuition} />
                   <ul>
                     {lesson.objectives.map((item) => (
@@ -379,6 +396,12 @@ export default function Home() {
               )}
               {stage === 5 && (
                 <>
+                  {lesson.takeaway && (
+                    <p className="takeaway">
+                      <strong>Remember it as: </strong>
+                      {lesson.takeaway}
+                    </p>
+                  )}
                   <h3>{lesson.checkpoint}</h3>
                   <textarea
                     aria-label="Your reflection"
