@@ -1408,6 +1408,83 @@ LESSONS = [
         "checkpoint": "Why does a pattern that repeats every 2 steps come out of the QFT as just two peaks?",
         "practice": 1,
     },
+    {
+        "id": "phase-estimation",
+        "unit": "algorithms",
+        "title": "Phase estimation: reading a hidden angle",
+        "eyebrow": "Algorithms",
+        "duration": "18 min",
+        "summary": "A gate secretly turns a special state by some fraction of a turn. Phase estimation kicks that turn onto a register of qubits and reads it out as binary digits.",
+        "intuition": [
+            "Some gates leave a special state alone except for turning its phase: U|ψ⟩ = e^{2πiφ}|ψ⟩. The fraction of a turn, φ, is hidden — and in chemistry and factoring it's exactly the number you're after.",
+            "Phase kickback from {lesson:deutsch} moves that turn onto a control qubit. Control U once and the control's clock hand turns by φ; control U² and it turns by 2φ; U⁴, by 4φ. Each **counting qubit** looks at the hand after a different number of ticks.",
+            "Together the counting qubits hold the phase as a rhythm, and the inverse of the QFT from {lesson:qft} turns that rhythm into binary digits. In the example U = S, a quarter turn: φ = 0.01 in binary, so the counting register reads 01.",
+        ],
+        "widget": {
+            "type": "gate_play",
+            "gates": ["H", "S", "T"],
+            "caption": "Phase estimation reads how far a gate turns a qubit's clock hand. H puts the hand on the equator; S turns it a quarter, T an eighth — the turns the counting qubits pick up.",
+        },
+        "quiz": {
+            "question": "Now the hidden gate is U = Z, which turns |1⟩ by half a turn (φ = ½ = 0.1 in binary). With two counting qubits, what do they read (q1 q0)?",
+            "options": ["00", "01", "10", "11"],
+            "answer": 2,
+            "explanations": [
+                "That would mean no turn at all (φ = 0).",
+                "That's a quarter turn, φ = 0.01 in binary — the S gate from the example.",
+                "Right. Half a turn is 0.10 in binary, and two counting qubits read those two digits as 10.",
+                "That would be three quarters of a turn.",
+            ],
+        },
+        "preset": "Phase estimation of S (reads 01)",
+        "try_this": [
+            "Three parts: q2 is prepared in |1⟩ (the state S turns); q0 and q1 control S and S² = Z; the inverse QFT reads the result. The bars show 101: counting register 01, so φ = 0.01 in binary = ¼.",
+            "Remove the last gate (the final H on q1). The readout blurs: the inverse QFT is what turns phases into digits.",
+            "Compare with the Qiskit version in step 5, where `cp` does each controlled turn in a single line.",
+        ],
+        "objectives": [
+            "Describe an eigenphase as a hidden fraction of a turn.",
+            "Explain how controlled powers of U write the phase onto counting qubits.",
+            "Build phase estimation with Qiskit's controlled phase gate and inverse QFT.",
+        ],
+        "explanation": [
+            "If U|ψ⟩ = e^{2πiφ}|ψ⟩, a controlled-U^{2ʲ} kicks the phase e^{2πi·2ʲφ} onto its control. With t counting qubits in |+⟩ controlling U, U², U⁴, …, the counting register ends up in (1/√2ᵗ) Σₖ e^{2πiφk}|k⟩ — exactly the QFT of the number 2ᵗφ.",
+            "So the inverse QFT returns |2ᵗφ⟩: the first t binary digits of φ. If φ has more digits than you have counting qubits, you get the nearest t-digit value with high probability. Shor's algorithm uses this to find the period of modular multiplication, and chemistry algorithms use it to read off energy levels.",
+        ],
+        "equation": "U|psi> = e^{2 pi i phi}|psi>;  after the inverse QFT the counting register reads 2^t phi",
+        "latex": r"U|\psi\rangle = e^{2\pi i\varphi}|\psi\rangle,\qquad \mathrm{QFT}^{\dagger}\,\frac{1}{\sqrt{2^t}}\sum_{k} e^{2\pi i\varphi k}|k\rangle = |2^t\varphi\rangle",
+        "misconception": "Phase estimation can't read the phase of any qubit you hand it. The target has to be in a state U only turns (an eigenstate — here |1⟩ for S); otherwise you get a random one of U's phases.",
+        "qiskit": {
+            "intro": "Each controlled power of U is a `cp` with the matching angle, and `QFTGate(2).inverse()` reads out the digits.",
+            "code": "import math\n"
+            + _IMPORTS
+            + "from qiskit.circuit.library import QFTGate\n"
+            "from qiskit.quantum_info import Statevector\n\n"
+            "phi = 1 / 4                          # S turns |1> by a quarter turn\n\n"
+            "qc = QuantumCircuit(3)               # q0, q1 count; q2 is the target\n"
+            "qc.x(2)                              # |1> is the state S turns\n"
+            "qc.h([0, 1])\n"
+            "qc.cp(2 * math.pi * phi, 0, 2)       # controlled-U\n"
+            "qc.cp(2 * math.pi * phi * 2, 1, 2)   # controlled-U^2\n"
+            "qc.append(QFTGate(2).inverse(), [0, 1])\n\n"
+            "print(Statevector(qc).probabilities_dict([0, 1], decimals=3))\n",
+            "notes": [
+                ("qc.cp(2 * math.pi * phi, 0, 2)", "Controlled-U: kicks one turn of φ back onto q0."),
+                ("qc.cp(2 * math.pi * phi * 2, 1, 2)", "Controlled-U²: q1 sees the hand after two ticks."),
+                ("QFTGate(2).inverse()", "Turns the rhythm in the counting qubits into binary digits of φ."),
+            ],
+        },
+        "code_task": {
+            "prompt": "Estimate the phase of Z (half a turn, φ = ½) with the same two counting qubits and target q2 = |1⟩. Keep the circuit in `qc`; the counting qubits should read 10.",
+            "starter": "import math\n" + _IMPORTS + "from qiskit.circuit.library import QFTGate\n\nqc = QuantumCircuit(3)\nqc.x(2)\nqc.h([0, 1])\n# controlled-U and controlled-U^2 for U = Z\n\nqc.append(QFTGate(2).inverse(), [0, 1])\n",
+            "solution": "import math\n" + _IMPORTS + "from qiskit.circuit.library import QFTGate\n\nqc = QuantumCircuit(3)\nqc.x(2)\nqc.h([0, 1])\nqc.cp(math.pi, 0, 2)\nqc.cp(2 * math.pi, 1, 2)\nqc.append(QFTGate(2).inverse(), [0, 1])\n",
+            "match": "probs",
+            "required_ops": ["cp"],
+            "hint": "For U = Z, φ = ½: `qc.cp(math.pi, 0, 2)` and `qc.cp(2 * math.pi, 1, 2)`. The second is a full turn, which changes nothing — try leaving it out.",
+        },
+        "checkpoint": "Why does controlling U² on the second counting qubit give you the next binary digit of the phase?",
+        "practice": 1,
+    },
     # ------------------------------------------------------------------ Unit 4
     {
         "id": "hardware",
@@ -1840,6 +1917,30 @@ PRESETS = {
             {"gate": "CNOT", "target": 1, "control": 0},
         ],
     },
+    "Phase estimation of S (reads 01)": {
+        "qubits": 3,
+        "gates": [
+            {"gate": "X", "target": 2, "control": None},
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "H", "target": 1, "control": None},
+            {"gate": "T", "target": 0, "control": None},
+            {"gate": "T", "target": 2, "control": None},
+            {"gate": "CNOT", "target": 2, "control": 0},
+            {"gate": "RZ", "target": 2, "control": None, "angle": -0.7853982},
+            {"gate": "CNOT", "target": 2, "control": 0},
+            {"gate": "CZ", "target": 2, "control": 1},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "CNOT", "target": 0, "control": 1},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "RZ", "target": 1, "control": None, "angle": 0.7853982},
+            {"gate": "CNOT", "target": 1, "control": 0},
+            {"gate": "RZ", "target": 1, "control": None, "angle": -0.7853982},
+            {"gate": "RZ", "target": 0, "control": None, "angle": -0.7853982},
+            {"gate": "H", "target": 1, "control": None},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -2071,6 +2172,13 @@ ANALOGIES = {
         "The QFT turns a repeating pattern in the amplitudes into peaks at its frequencies.",
         "Your ear hears every note at once. A measurement after the QFT gives one frequency per run, picked at random from the peaks — plenty for algorithms that need one rhythm, useless for reading a whole spectrum.",
         "The QFT turns rhythm into position: a pattern with period r lands on multiples of N/r.",
+    ),
+    "phase-estimation": _analogy(
+        "Timing a clock hand with snapshots",
+        "To find how far a clock hand moves per tick, take photos after 1 tick, 2 ticks and 4 ticks. The 1-tick photo gives a rough idea; the 4-tick photo magnifies small differences. Put together, the photos pin the speed down digit by digit.",
+        "Each counting qubit sees the phase after a different power of U, and together they spell out its binary digits.",
+        "You can't simply look at a qubit's hand: the \"photos\" are phases that only the inverse QFT can combine into a readable number — and only if the target is in a state that U merely turns.",
+        "Kick U, U², U⁴… onto counting qubits; the inverse QFT reads off φ's binary digits.",
     ),
 }
 
@@ -2327,6 +2435,20 @@ RUBRICS = {
         "watch_for": [
             _watch(["whole spectrum", "all frequencies at once", "every frequency at once", "read every"],
                    "a measurement returns one frequency per run — the QFT doesn't hand you the full spectrum."),
+        ],
+    },
+    "phase-estimation": {
+        "key_ideas": [
+            _idea("U² turns the hand twice as far", ["twice", "2φ", "double", "u²", "u^2", "power", "two ticks"],
+                  "say that controlling U² kicks back twice the phase."),
+            _idea("Doubling shifts the binary digits", ["digit", "binary", "bit", "next", "finer", "shift"],
+                  "connect doubling the phase to moving to the next binary digit."),
+            _idea("The turn is kicked back onto the counting qubit", ["kick", "control", "phase", "counting"],
+                  "explain how the phase ends up on the counting qubit."),
+        ],
+        "watch_for": [
+            _watch(["any state", "measure the phase directly", "read the phase directly"],
+                   "the target must be in a state U only turns, and the phase is read through interference — never directly."),
         ],
     },
 }
