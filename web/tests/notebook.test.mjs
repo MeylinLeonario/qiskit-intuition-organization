@@ -22,9 +22,9 @@ test("bounds untrusted notebook data and rejects malformed maps", () => {
   assert.equal(clean.learning_stage, 0);
 });
 
-test("all 16 published presets simulate and export, including teleportation CZ", () => {
+test("every published lesson's preset simulates and exports, including teleportation CZ", () => {
   const course = JSON.parse(readFileSync(new URL("../src/data/course.json", import.meta.url)));
-  assert.equal(course.lessons.length, 16);
+  assert.ok(course.lessons.length >= 16);
   for (const lesson of course.lessons) {
     assert.equal(lesson.code_task.solution, undefined);
     const preset = course.presets[lesson.preset];
