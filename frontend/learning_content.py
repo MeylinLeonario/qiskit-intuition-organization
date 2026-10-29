@@ -836,6 +836,84 @@ LESSONS = [
         "practice": 2,
     },
     {
+        "id": "no-cloning",
+        "unit": "many-qubits",
+        "title": "Why you can't copy a qubit",
+        "eyebrow": "Multi-qubit systems",
+        "duration": "12 min",
+        "summary": "A circuit that copies 0s and 1s perfectly fails on everything in between. That's not a flaw in the circuit: no circuit can copy an unknown quantum state.",
+        "intuition": [
+            "Copying classical bits is easy. CNOT with a blank target turns |0⟩|0⟩ into |0⟩|0⟩ and |1⟩|0⟩ into |1⟩|1⟩ — a perfect photocopier for 0s and 1s.",
+            "Now feed it |+⟩, the arrow on the equator. Two real copies would be |+⟩|+⟩: two independent arrows, giving all four outcomes. What comes out instead is the Bell state from {lesson:entanglement}, (|00⟩ + |11⟩)/√2. The original is now entangled with the \"copy\", and neither has an arrow of its own.",
+            "It isn't CNOT's fault. The **no-cloning theorem** says no quantum circuit can copy an unknown state. If one could, you'd make a pile of copies, measure each along a different axis and read the arrow directly — which is exactly what measurement forbids.",
+        ],
+        "widget": {
+            "type": "entangle",
+            "caption": "A copier's output always agrees with the original — but agreeing isn't copying. Two true copies of |+⟩ would disagree half the time.",
+        },
+        "quiz": {
+            "question": "You feed |+⟩ and a blank |0⟩ into the CNOT copier and measure both qubits. Which results can appear?",
+            "options": [
+                "00, 01, 10 and 11, 25% each — two independent copies",
+                "Only 00 and 11, 50% each",
+                "Only 00",
+                "Only 01 and 10",
+            ],
+            "answer": 1,
+            "explanations": [
+                "That's what two true copies of |+⟩ would give. The copier produces something else.",
+                "Right. CNOT makes the Bell state (|00⟩ + |11⟩)/√2: the \"copy\" always agrees with the original, but the two are entangled rather than two independent |+⟩s.",
+                "That would mean the original was |0⟩, but |+⟩ gives 1 half the time.",
+                "CNOT copies the control's value into the target, so the two always agree.",
+            ],
+        },
+        "preset": "Copy attempt: CNOT on |+>",
+        "try_this": [
+            "The example tries to copy |+⟩ from q0 into q1. Two true copies would show all four outcomes; you only see 00 and 11.",
+            "Look at the Bloch readout: both arrows have shrunk to the centre. Copying didn't just fail — it took the original's arrow away.",
+            "Replace the H with **X**, so the original is |1⟩. Now the copy is perfect: 11 every time. The copier only works on 0 and 1.",
+        ],
+        "objectives": [
+            "Show that CNOT copies 0 and 1 but not superpositions.",
+            "State the no-cloning theorem and why it has to hold.",
+            "Compare a \"copied\" state with a true copy using fidelity in Qiskit.",
+        ],
+        "explanation": [
+            "Suppose a unitary U copied every state: U|ψ⟩|0⟩ = |ψ⟩|ψ⟩. Unitaries preserve overlaps, so for any two states ⟨φ|ψ⟩ = ⟨φ|ψ⟩². That only holds if the overlap is 0 or 1: the states are identical or perfectly distinguishable. A machine that copies |0⟩ and |1⟩ therefore can't copy |+⟩.",
+            "Concretely, CNOT(|+⟩|0⟩) = (|00⟩ + |11⟩)/√2, while a true copy is |+⟩|+⟩ = (|00⟩ + |01⟩ + |10⟩ + |11⟩)/2, and their fidelity is only ½. Known states can be prepared as often as you like; it's unknown states that can't be copied — which is what makes quantum key distribution secure.",
+        ],
+        "equation": "U|psi>|0> = |psi>|psi> for every psi  =>  <phi|psi> = <phi|psi>^2",
+        "latex": r"U|\psi\rangle|0\rangle = |\psi\rangle|\psi\rangle\ \ \forall\psi \;\Rightarrow\; \langle\phi|\psi\rangle = \langle\phi|\psi\rangle^{2}",
+        "misconception": "No-cloning doesn't stop you making many qubits in the same known state — just run the same preparation again. It forbids copying a state you don't know.",
+        "qiskit": {
+            "intro": "Build the copier, then compare its output with two true copies using `state_fidelity`: 1 means identical.",
+            "code": _IMPORTS
+            + "from qiskit.quantum_info import Statevector, state_fidelity\n\n"
+            "copier = QuantumCircuit(2)\n"
+            "copier.h(0)           # the original: |+> on q0\n"
+            "copier.cx(0, 1)       # try to copy q0 into q1\n\n"
+            "true_copy = QuantumCircuit(2)\n"
+            "true_copy.h([0, 1])   # what two real copies of |+> look like\n\n"
+            "print('copier:  ', Statevector(copier).probabilities_dict(decimals=3))\n"
+            "print('2 copies:', Statevector(true_copy).probabilities_dict(decimals=3))\n"
+            "print('fidelity:', round(state_fidelity(Statevector(copier), Statevector(true_copy)), 3))\n",
+            "notes": [
+                ("copier.cx(0, 1)", "CNOT writes q0's value into a blank q1 — a perfect copier for 0 and 1."),
+                ("true_copy.h([0, 1])", "Two independent |+⟩ states: what a real copier would have to produce."),
+                ("state_fidelity(...)", "How alike two states are, from 0 to 1. Here it's 0.5."),
+            ],
+        },
+        "code_task": {
+            "prompt": "The copier does work on 0 and 1. Prepare |1⟩ on q0 and copy it into q1 with CNOT, so `qc` ends in |11⟩.",
+            "starter": _IMPORTS + "\nqc = QuantumCircuit(2)\n# prepare |1> on q0, then copy it into q1\n",
+            "solution": _IMPORTS + "qc = QuantumCircuit(2)\nqc.x(0)\nqc.cx(0, 1)\n",
+            "required_ops": ["cx"],
+            "hint": "`qc.x(0)` prepares |1⟩; then `qc.cx(0, 1)` copies it.",
+        },
+        "checkpoint": "If you could copy an unknown qubit, how would you use the copies to read its arrow — and why does that rule copying out?",
+        "practice": 2,
+    },
+    {
         "id": "teleportation",
         "unit": "many-qubits",
         "title": "Teleportation",
@@ -843,7 +921,7 @@ LESSONS = [
         "duration": "18 min",
         "summary": "Move an unknown qubit state from Alice to Bob with one shared Bell pair and two ordinary bits — without anyone learning what the state is.",
         "intuition": [
-            "Alice has a qubit in a state she doesn't know, and she can't copy it — unknown quantum states can't be cloned. But she and Bob share a **Bell pair** from {lesson:entanglement}.",
+            "Alice has a qubit in a state she doesn't know, and she can't copy it — {lesson:no-cloning} showed why. But she and Bob share a **Bell pair** from {lesson:entanglement}.",
             "Alice entangles her mystery qubit with her half of the pair and measures both. Her two results look completely random, but they tell Bob **which of four simple fixes** — nothing, X, Z, or both — turns his half into her original state.",
             "After Bob's fix, his qubit is exactly Alice's state, and hers has been destroyed by the measurement. The state **moved**; it wasn't copied. And nothing travelled faster than light: Bob had to wait for Alice's message.",
         ],
@@ -1468,6 +1546,13 @@ PRESETS = {
             {"gate": "H", "target": 0, "control": None},
         ],
     },
+    "Copy attempt: CNOT on |+>": {
+        "qubits": 2,
+        "gates": [
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "CNOT", "target": 1, "control": 0},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -1672,6 +1757,13 @@ ANALOGIES = {
         "Water waves are real ripples in space that you can watch. Quantum amplitudes live in the space of possible answers, and you never see the wave — each run shows you one outcome.",
         "Quantum speed-ups come from interference: wrong answers cancel, right ones reinforce.",
     ),
+    "no-cloning": _analogy(
+        "A photocopier that only understands black and white",
+        "It copies a pure black or pure white page perfectly. Feed it a grey page and, instead of a second grey page, it binds the original and the copy together so that whenever anyone looks, both come out black or both come out white.",
+        "The copier works on 0 and 1 but entangles everything in between, and the original loses its own \"shade\".",
+        "Grey paper looks grey to anyone. A qubit's shade can't be seen at all — and that's exactly why a working copier would be so powerful, and why it can't exist.",
+        "No circuit copies an unknown state: CNOT copies 0 and 1, but entangles everything in between.",
+    ),
 }
 
 
@@ -1872,6 +1964,20 @@ RUBRICS = {
         "watch_for": [
             _watch(["tries every", "all answers at once", "every answer at once", "in parallel"],
                    "trying everything at once isn't the speed-up — a measurement would hand you one random answer."),
+        ],
+    },
+    "no-cloning": {
+        "key_ideas": [
+            _idea("Copies would let you measure along many axes", ["many copies", "lots of copies", "each copy", "different ax", "every ax", "read the arrow", "learn the state"],
+                  "say what you'd do with many copies: measure them along different axes and reconstruct the arrow."),
+            _idea("Measurement only gives one bit", ["one bit", "can't see", "cannot see", "only 0 or 1", "statistic", "forbid", "impossible"],
+                  "connect it to measurement: one qubit only ever hands you one bit."),
+            _idea("CNOT entangles instead of copying", ["entangl", "bell", "00 and 11", "agree"],
+                  "describe what the CNOT \"copier\" actually produces."),
+        ],
+        "watch_for": [
+            _watch(["can't make two", "can't prepare", "only one qubit can"],
+                   "you can prepare many qubits in the same known state — it's copying an unknown one that's impossible."),
         ],
     },
 }
