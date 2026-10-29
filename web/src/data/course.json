@@ -410,8 +410,8 @@
       "duration": "12 min",
       "summary": "The Hadamard gate tips the arrow from a pole onto the equator — and tipping it again brings it back.",
       "intuition": [
-        "The **Hadamard (H)** gate is a half-turn around a diagonal axis halfway between x and z.",
-        "That diagonal turn carries the north pole to the front of the equator (called |+⟩) and the south pole to the back (|−⟩). Either way, a measurement now gives 50/50.",
+        "Start with the arrow pointing straight up at |0⟩ and tip it over until it lies flat on the equator, facing you. It now points at neither pole, so the question \"0 or 1?\" has no favourite answer: you get each one half the time.",
+        "That tipping move is the **Hadamard (H)** gate — a half-turn around a diagonal axis halfway between x and z. It carries the north pole to the front of the equator (called |+⟩) and the south pole to the back (|−⟩). Either way, a measurement now gives 50/50.",
         "Here's the surprise: apply H again and the arrow goes **straight back** to the pole. The 'randomness' was never lost — it was a definite direction all along."
       ],
       "widget": {
@@ -547,7 +547,7 @@
       "duration": "12 min",
       "summary": "X and H are fixed half-turns. RY lets you turn the arrow by any angle — and set any probability you like.",
       "intuition": [
-        "X and H are like switches with fixed positions. **RY(θ)** is a dial: it rotates the arrow by angle θ around the y axis.",
+        "Suppose you want a qubit that reads 1 exactly a quarter of the time. X and H can't do it: they're switches with fixed positions. You need a **dial** — **RY(θ)** turns the arrow by any angle θ around the y axis.",
         "At θ = 0 nothing happens. At θ = π (half a turn) you reach |1⟩ — the same as X. At θ = π/2 you land on the equator — 50/50, like H.",
         "In between, the probability of reading 1 grows smoothly, following sin²(θ/2). That's how real algorithms load numbers into qubits."
       ],
@@ -1174,8 +1174,8 @@
       "duration": "18 min",
       "summary": "Use CNOT on a superposition and two qubits stop having their own arrows. They share one state.",
       "intuition": [
-        "**CNOT** is a conditional flip: if the control qubit is 1, flip the target. On plain 0s and 1s, it's just classical logic.",
-        "Now give it a control that is in superposition. Both branches happen: |00⟩ stays |00⟩ and |10⟩… becomes |11⟩. The pair is now (|00⟩ + |11⟩)/√2 — a **Bell state**.",
+        "Here's the goal: two qubits whose answers always match, even though each one, on its own, is a fair coin flip.",
+        "The tool is **CNOT**, a conditional flip: if the control qubit is 1, flip the target. On plain 0s and 1s it's ordinary logic. Give it a control in superposition and both branches happen: |00⟩ stays |00⟩ and |10⟩ becomes |11⟩. The pair is now (|00⟩ + |11⟩)/√2 — a **Bell state**.",
         "Measure either qubit and you get a coin flip. Measure both and they **always agree**. Neither qubit has an arrow of its own any more — the information lives in the pair."
       ],
       "widget": {
@@ -1567,7 +1567,7 @@
       "duration": "20 min",
       "summary": "Mark the answer with a phase, then use interference to amplify it. With 4 items, one round finds it with certainty.",
       "intuition": [
-        "Start with every possible answer equally likely (H on every qubit). Measuring now would be a blind guess.",
+        "Imagine four sealed boxes, one hiding a prize, and a helper who won't say which box it is but will quietly mark it. Start with every box equally likely (H on every qubit) — measuring now would be a blind guess.",
         "The **oracle** secretly flips the sign of the correct answer's amplitude. The odds don't change yet — it's a phase, like Lesson 6.",
         "The **diffuser** reflects every amplitude around the average. The marked one, now below average, gets flung far above it; the others shrink. Repeat about √N times and the answer dominates."
       ],
@@ -1947,7 +1947,7 @@
       "duration": "15 min",
       "summary": "Give a circuit adjustable knobs, measure how wrong it is, and turn the knobs to do better. That's a variational algorithm.",
       "intuition": [
-        "In Lesson 5 you set an RY angle by hand to hit a target probability. Now let a computer do it.",
+        "Think of a circuit with knobs. In Lesson 5 you turned an RY knob by hand until the probability hit a target. Now let a computer turn the knobs for you.",
         "A **parameterized circuit** has rotation angles left as variables. A classical optimizer runs the circuit, measures a **cost** (how far the output is from what you want), nudges the angles downhill, and repeats.",
         "This loop powers variational chemistry solvers and quantum machine-learning models. It's the same idea as training a neural network — the model just happens to be a circuit."
       ],
