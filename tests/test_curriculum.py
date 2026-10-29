@@ -72,3 +72,11 @@ def test_lesson_cross_references_point_at_the_right_lesson():
     assert all(1 <= int(n) <= len(LESSONS) for n in re.findall(r"Lesson (\d+)", text))
     flip = next(lesson for lesson in LESSONS if lesson["id"] == "flip")
     assert f"Lesson {numbers['phase']}" in " ".join(flip["try_this"])
+
+
+@pytest.mark.parametrize("lesson", LESSONS, ids=lambda lesson: lesson["id"])
+def test_every_lesson_has_an_honest_analogy_and_a_takeaway(lesson):
+    analogy = lesson["analogy"]
+    for field in ("title", "picture", "captures", "breaks"):
+        assert analogy[field].strip(), field
+    assert lesson["takeaway"].strip()

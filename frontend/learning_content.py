@@ -1462,6 +1462,128 @@ GLOSSARY = [
 ]
 
 
+def _analogy(title: str, picture: str, captures: str, breaks: str, takeaway: str) -> dict:
+    return {"analogy": {"title": title, "picture": picture, "captures": captures, "breaks": breaks}, "takeaway": takeaway}
+
+
+# An everyday picture for each lesson, with what it gets right and where it
+# breaks: analogies stick, so each one says where to stop trusting it.
+ANALOGIES = {
+    "qubit": _analogy(
+        "A weather vane you may ask only one question",
+        "A weather vane can point in any direction, but you're only allowed to ask \"north or south?\". It answers with one word, and the instant it answers it swings to point exactly that way.",
+        "The state (a direction) holds far more than the answer (one bit), and asking changes the state.",
+        "You could walk up and look at a real vane. Nobody can look at a qubit's arrow: you only learn where it points from the statistics of many identically prepared qubits.",
+        "The state is the arrow; a measurement only ever hands you one bit.",
+    ),
+    "flip": _analogy(
+        "Flipping a pancake",
+        "Flip the pan and the top of the pancake becomes the bottom. Flip it again and you're back where you started.",
+        "X is a half-turn: it swaps |0⟩ and |1⟩, it's predictable, and doing it twice undoes it.",
+        "A pancake is either side up. X also turns every in-between direction of the arrow, swapping how much |0⟩ and how much |1⟩ it has.",
+        "Gates turn the arrow; X is a half-turn that swaps |0⟩ and |1⟩.",
+    ),
+    "measurement": _analogy(
+        "An opinion poll",
+        "Asking one voter tells you almost nothing about an election. Ask a thousand and you know the percentages, give or take a margin of error that shrinks as the poll grows.",
+        "Each shot is one vote; the fractions estimate the probabilities, with an error that shrinks like 1/√N.",
+        "A voter already had an opinion before you asked. A qubit has no answer waiting: measuring creates it, and every \"vote\" needs a freshly prepared qubit.",
+        "One shot is one vote; many shots reveal the odds.",
+    ),
+    "superposition": _analogy(
+        "A compass needle pointing east — not a spinning coin",
+        "North means 0 and south means 1. A needle pointing east is in a perfectly definite direction; it's only the question \"north or south?\" that has no good answer, so you get either one, 50/50.",
+        "|+⟩ is a definite state. The randomness comes from the question you ask, which is why a second H can bring the needle back to north exactly.",
+        "A real needle pointing east would answer \"neither\". A qubit must answer 0 or 1 — and then it really becomes that answer.",
+        "H tips the arrow onto the equator: a definite state with random answers — and a second H undoes it.",
+    ),
+    "rotations": _analogy(
+        "A dimmer instead of a light switch",
+        "X is an on/off switch. RY(θ) is a dimmer: turn the knob and you can set any level in between.",
+        "Rotations give continuous control: the angle sets the probability of reading 1.",
+        "A dimmer brightens evenly as you turn it; P(1) = sin²(θ/2) changes slowly near the ends and fast in the middle. And each measurement is still fully on or fully off — never half-bright.",
+        "RY(θ) is a dial: P(1) = sin²(θ/2).",
+    ),
+    "phase": _analogy(
+        "Longitude on a globe",
+        "Two cities on the same line of latitude are equally far north, whatever their longitude. Z moves the arrow along its line of latitude — east or west — without moving it north or south.",
+        "Phase leaves the measurement odds untouched, yet it is a real difference that a later gate can turn into different odds.",
+        "Longitude is printed on every map. Phase can't be read off directly: only interference reveals a relative phase, and turning the whole globe at once (a global phase) changes nothing at all.",
+        "Phase is the arrow's longitude: invisible now, decisive later.",
+    ),
+    "interference": _analogy(
+        "Noise-cancelling headphones",
+        "Headphones play a mirror image of the noise; crest meets trough and the sound disappears. Waves that line up instead get louder.",
+        "Amplitudes with opposite signs cancel and amplitudes with the same sign reinforce, so H–Z–H sends everything to |1⟩.",
+        "Headphones cancel sound in the air. Here what cancels are amplitudes — numbers attached to outcomes — and the probability that vanishes from one outcome reappears on the other.",
+        "Amplitudes add like waves: in step they grow, out of step they cancel.",
+    ),
+    "bases": _analogy(
+        "Polarized sunglasses",
+        "Light that's polarized diagonally gets half-blocked by vertical sunglasses, but tilt the glasses to the diagonal and all of it passes.",
+        "The same state can be certain along one axis and 50/50 along another; the measurement axis is a choice. (Photon polarization really is a qubit.)",
+        "A beam of light passes partly. A single photon passes or doesn't — and if it passes, it's now lined up with the filter, which is the collapse.",
+        "A measurement asks about one axis; to ask about another, rotate it onto Z first.",
+    ),
+    "registers": _analogy(
+        "A combination lock",
+        "A lock with ten two-position wheels has 2¹⁰ = 1024 possible combinations. Every extra wheel doubles the count.",
+        "n qubits have 2ⁿ basis states, and each one gets its own amplitude.",
+        "A lock is set to exactly one combination. n qubits carry an amplitude for every combination at once — yet a measurement still shows you only one.",
+        "n qubits have 2ⁿ amplitudes, but a measurement shows one n-bit string.",
+    ),
+    "entanglement": _analogy(
+        "Two dancers sharing one routine",
+        "Watch either dancer alone and their moves look improvised. Watch both and they're perfectly coordinated: the choreography belongs to the pair, not to either dancer.",
+        "Each qubit alone is a coin flip, but the pair's results always agree; the state lives in the pair.",
+        "Dancers follow steps written in advance. Experiments (Bell tests) show entangled qubits can't be carrying pre-written answers — and neither one can be used to send the other a message.",
+        "Entangled qubits share one state: each alone is random, together they agree.",
+    ),
+    "teleportation": _analogy(
+        "A fax that shreds the original",
+        "The page comes out at Bob's end, the original is destroyed at Alice's, and nothing gets through without the phone line.",
+        "The state moves rather than being copied, and Bob can't finish until Alice's ordinary message arrives.",
+        "A fax reads the page. Alice never learns her state, and her two bits alone say nothing about it — the state travels in the shared entanglement and the bits together.",
+        "Shared entanglement plus two ordinary bits move a state: nothing is copied, nothing outruns light.",
+    ),
+    "deutsch": _analogy(
+        "Spotting a two-headed coin",
+        "A genuine coin has different faces (balanced); a trick coin has the same face twice (constant). Normally you have to look at both sides to tell.",
+        "The question is about how the two answers relate, and one quantum query settles it.",
+        "You still never see either face — you only learn whether they differ. And no real coin lets you look at both sides in superposition; the oracle must accept quantum inputs.",
+        "Phase kickback writes f's answer into the input's phase; interference reads it in one query.",
+    ),
+    "grover": _analogy(
+        "Pushing a swing",
+        "Each well-timed push makes the swing go a little higher. Keep pushing at the right rhythm and it soars; keep going too long and it starts coming back down.",
+        "Each oracle-plus-diffuser round adds a bit more amplitude to the answer, and about √N rounds is the sweet spot — more overshoots.",
+        "A swing gains energy. Grover's state never grows: total probability stays 1, and the answer's share rises only because every other answer's share falls.",
+        "Mark the answer with a sign, reflect about the average, repeat about (π/4)√N times.",
+    ),
+    "hardware": _analogy(
+        "Whispering down a long line",
+        "Pass a message down a line of people and every whisper adds a small mistake. A short line gets it through; a long line turns it into mush.",
+        "Every gate adds a little error, so deeper circuits drift further from the ideal result.",
+        "In the whispering game the message changes into a different message. Quantum noise mostly shrinks the arrow toward the centre: the state gets less definite and the results drift toward random.",
+        "Every gate adds a little noise; the arrow shrinks and results drift toward random.",
+    ),
+    "real-chip": _analogy(
+        "Seating guests at a long dinner table",
+        "Guests can only chat with their neighbours. To talk to someone at the far end, people have to swap seats — and every swap takes time and risks spilled drinks.",
+        "The coupling map decides who can interact; the transpiler adds SWAPs, and each SWAP adds noise.",
+        "Guests could always shout down the table. On a chip there's no shortcut: a two-qubit gate between non-neighbours simply can't happen until the states are moved next to each other.",
+        "Chips connect only neighbours; routing adds SWAPs, and every SWAP adds noise.",
+    ),
+    "qml": _analogy(
+        "Tuning a guitar by ear",
+        "Pluck the string, hear how far off it is, nudge the peg the right way, and pluck again — until it's in tune.",
+        "The rotation angles are pegs, the cost is how far off it sounds, and the gradient says which way to turn.",
+        "You hear a guitar's pitch at once. A circuit's cost is estimated from noisy shots, and even the gradient has to be measured (the parameter-shift rule), so every \"listen\" costs many runs.",
+        "A variational circuit has knobs; an optimizer turns them downhill on a measured cost.",
+    ),
+}
+
+
 def _idea(idea: str, terms: list[str], hint: str) -> dict:
     return {"idea": idea, "terms": terms, "hint": hint}
 
@@ -1651,3 +1773,4 @@ RUBRICS = {
 
 for _lesson in LESSONS:
     _lesson.update(RUBRICS.get(_lesson["id"], {"key_ideas": [], "watch_for": []}))
+    _lesson.update(ANALOGIES[_lesson["id"]])

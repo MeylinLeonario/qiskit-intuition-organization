@@ -131,7 +131,14 @@
           ],
           "note": "the qubit isn't secretly 0 or 1 before you look — the arrow genuinely points in between."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "A weather vane you may ask only one question",
+        "picture": "A weather vane can point in any direction, but you're only allowed to ask \"north or south?\". It answers with one word, and the instant it answers it swings to point exactly that way.",
+        "captures": "The state (a direction) holds far more than the answer (one bit), and asking changes the state.",
+        "breaks": "You could walk up and look at a real vane. Nobody can look at a qubit's arrow: you only learn where it points from the statistics of many identically prepared qubits."
+      },
+      "takeaway": "The state is the arrow; a measurement only ever hands you one bit."
     },
     {
       "id": "flip",
@@ -249,7 +256,14 @@
           "hint": "X exchanges α and β."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "Flipping a pancake",
+        "picture": "Flip the pan and the top of the pancake becomes the bottom. Flip it again and you're back where you started.",
+        "captures": "X is a half-turn: it swaps |0⟩ and |1⟩, it's predictable, and doing it twice undoes it.",
+        "breaks": "A pancake is either side up. X also turns every in-between direction of the arrow, swapping how much |0⟩ and how much |1⟩ it has."
+      },
+      "takeaway": "Gates turn the arrow; X is a half-turn that swaps |0⟩ and |1⟩."
     },
     {
       "id": "measurement",
@@ -378,7 +392,14 @@
           ],
           "note": "even with many shots you'll rarely see exactly 75% — just closer and closer."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "An opinion poll",
+        "picture": "Asking one voter tells you almost nothing about an election. Ask a thousand and you know the percentages, give or take a margin of error that shrinks as the poll grows.",
+        "captures": "Each shot is one vote; the fractions estimate the probabilities, with an error that shrinks like 1/√N.",
+        "breaks": "A voter already had an opinion before you asked. A qubit has no answer waiting: measuring creates it, and every \"vote\" needs a freshly prepared qubit."
+      },
+      "takeaway": "One shot is one vote; many shots reveal the odds."
     },
     {
       "id": "superposition",
@@ -508,7 +529,14 @@
           ],
           "note": "H doesn't add randomness — it's a deterministic rotation."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "A compass needle pointing east — not a spinning coin",
+        "picture": "North means 0 and south means 1. A needle pointing east is in a perfectly definite direction; it's only the question \"north or south?\" that has no good answer, so you get either one, 50/50.",
+        "captures": "|+⟩ is a definite state. The randomness comes from the question you ask, which is why a second H can bring the needle back to north exactly.",
+        "breaks": "A real needle pointing east would answer \"neither\". A qubit must answer 0 or 1 — and then it really becomes that answer."
+      },
+      "takeaway": "H tips the arrow onto the equator: a definite state with random answers — and a second H undoes it."
     },
     {
       "id": "rotations",
@@ -625,7 +653,14 @@
           "hint": "RY(π/2) reaches the equator (50%); RY(π/4) gives about 15%."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "A dimmer instead of a light switch",
+        "picture": "X is an on/off switch. RY(θ) is a dimmer: turn the knob and you can set any level in between.",
+        "captures": "Rotations give continuous control: the angle sets the probability of reading 1.",
+        "breaks": "A dimmer brightens evenly as you turn it; P(1) = sin²(θ/2) changes slowly near the ends and fast in the middle. And each measurement is still fully on or fully off — never half-bright."
+      },
+      "takeaway": "RY(θ) is a dial: P(1) = sin²(θ/2)."
     },
     {
       "id": "phase",
@@ -750,7 +785,14 @@
           ],
           "note": "Z isn't doing nothing — it changes the state, just not the current odds."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "Longitude on a globe",
+        "picture": "Two cities on the same line of latitude are equally far north, whatever their longitude. Z moves the arrow along its line of latitude — east or west — without moving it north or south.",
+        "captures": "Phase leaves the measurement odds untouched, yet it is a real difference that a later gate can turn into different odds.",
+        "breaks": "Longitude is printed on every map. Phase can't be read off directly: only interference reveals a relative phase, and turning the whole globe at once (a global phase) changes nothing at all."
+      },
+      "takeaway": "Phase is the arrow's longitude: invisible now, decisive later."
     },
     {
       "id": "interference",
@@ -876,7 +918,14 @@
           ],
           "note": "it's amplitudes (which can be negative) that cancel, not probabilities."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "Noise-cancelling headphones",
+        "picture": "Headphones play a mirror image of the noise; crest meets trough and the sound disappears. Waves that line up instead get louder.",
+        "captures": "Amplitudes with opposite signs cancel and amplitudes with the same sign reinforce, so H–Z–H sends everything to |1⟩.",
+        "breaks": "Headphones cancel sound in the air. Here what cancels are amplitudes — numbers attached to outcomes — and the probability that vanishes from one outcome reappears on the other."
+      },
+      "takeaway": "Amplitudes add like waves: in step they grow, out of step they cancel."
     },
     {
       "id": "bases",
@@ -1001,7 +1050,14 @@
           "hint": "measured along Z, both give 50/50 — the Z question can't separate them."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "Polarized sunglasses",
+        "picture": "Light that's polarized diagonally gets half-blocked by vertical sunglasses, but tilt the glasses to the diagonal and all of it passes.",
+        "captures": "The same state can be certain along one axis and 50/50 along another; the measurement axis is a choice. (Photon polarization really is a qubit.)",
+        "breaks": "A beam of light passes partly. A single photon passes or doesn't — and if it passes, it's now lined up with the filter, which is the collapse."
+      },
+      "takeaway": "A measurement asks about one axis; to ask about another, rotate it onto Z first."
     },
     {
       "id": "registers",
@@ -1100,7 +1156,14 @@
           "hint": "each measurement still gives just one 10-bit result."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "A combination lock",
+        "picture": "A lock with ten two-position wheels has 2¹⁰ = 1024 possible combinations. Every extra wheel doubles the count.",
+        "captures": "n qubits have 2ⁿ basis states, and each one gets its own amplitude.",
+        "breaks": "A lock is set to exactly one combination. n qubits carry an amplitude for every combination at once — yet a measurement still shows you only one."
+      },
+      "takeaway": "n qubits have 2ⁿ amplitudes, but a measurement shows one n-bit string."
     },
     {
       "id": "entanglement",
@@ -1225,7 +1288,14 @@
           ],
           "note": "entanglement can't send messages — each side alone sees random results."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "Two dancers sharing one routine",
+        "picture": "Watch either dancer alone and their moves look improvised. Watch both and they're perfectly coordinated: the choreography belongs to the pair, not to either dancer.",
+        "captures": "Each qubit alone is a coin flip, but the pair's results always agree; the state lives in the pair.",
+        "breaks": "Dancers follow steps written in advance. Experiments (Bell tests) show entangled qubits can't be carrying pre-written answers — and neither one can be used to send the other a message."
+      },
+      "takeaway": "Entangled qubits share one state: each alone is random, together they agree."
     },
     {
       "id": "teleportation",
@@ -1346,7 +1416,14 @@
           "hint": "explain why no information arrives faster than light."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "A fax that shreds the original",
+        "picture": "The page comes out at Bob's end, the original is destroyed at Alice's, and nothing gets through without the phone line.",
+        "captures": "The state moves rather than being copied, and Bob can't finish until Alice's ordinary message arrives.",
+        "breaks": "A fax reads the page. Alice never learns her state, and her two bits alone say nothing about it — the state travels in the shared entanglement and the bits together."
+      },
+      "takeaway": "Shared entanglement plus two ordinary bits move a state: nothing is copied, nothing outruns light."
     },
     {
       "id": "deutsch",
@@ -1472,7 +1549,14 @@
           ],
           "note": "you never learn f(0) or f(1) — only whether they're equal."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "Spotting a two-headed coin",
+        "picture": "A genuine coin has different faces (balanced); a trick coin has the same face twice (constant). Normally you have to look at both sides to tell.",
+        "captures": "The question is about how the two answers relate, and one quantum query settles it.",
+        "breaks": "You still never see either face — you only learn whether they differ. And no real coin lets you look at both sides in superposition; the oracle must accept quantum inputs."
+      },
+      "takeaway": "Phase kickback writes f's answer into the input's phase; interference reads it in one query."
     },
     {
       "id": "grover",
@@ -1599,7 +1683,14 @@
           ],
           "note": "it doesn't read every answer at once — it reshapes amplitudes so one measurement is likely right."
         }
-      ]
+      ],
+      "analogy": {
+        "title": "Pushing a swing",
+        "picture": "Each well-timed push makes the swing go a little higher. Keep pushing at the right rhythm and it soars; keep going too long and it starts coming back down.",
+        "captures": "Each oracle-plus-diffuser round adds a bit more amplitude to the answer, and about √N rounds is the sweet spot — more overshoots.",
+        "breaks": "A swing gains energy. Grover's state never grows: total probability stays 1, and the answer's share rises only because every other answer's share falls."
+      },
+      "takeaway": "Mark the answer with a sign, reflect about the average, repeat about (π/4)√N times."
     },
     {
       "id": "hardware",
@@ -1712,7 +1803,14 @@
           "hint": "separate sampling variation from device errors."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "Whispering down a long line",
+        "picture": "Pass a message down a line of people and every whisper adds a small mistake. A short line gets it through; a long line turns it into mush.",
+        "captures": "Every gate adds a little error, so deeper circuits drift further from the ideal result.",
+        "breaks": "In the whispering game the message changes into a different message. Quantum noise mostly shrinks the arrow toward the centre: the state gets less definite and the results drift toward random."
+      },
+      "takeaway": "Every gate adds a little noise; the arrow shrinks and results drift toward random."
     },
     {
       "id": "real-chip",
@@ -1831,7 +1929,14 @@
           "hint": "every extra gate is another chance for error."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "Seating guests at a long dinner table",
+        "picture": "Guests can only chat with their neighbours. To talk to someone at the far end, people have to swap seats — and every swap takes time and risks spilled drinks.",
+        "captures": "The coupling map decides who can interact; the transpiler adds SWAPs, and each SWAP adds noise.",
+        "breaks": "Guests could always shout down the table. On a chip there's no shortcut: a two-qubit gate between non-neighbours simply can't happen until the states are moved next to each other."
+      },
+      "takeaway": "Chips connect only neighbours; routing adds SWAPs, and every SWAP adds noise."
     },
     {
       "id": "qml",
@@ -1953,7 +2058,14 @@
           "hint": "the gradient (e.g. from the parameter-shift rule) points the way."
         }
       ],
-      "watch_for": []
+      "watch_for": [],
+      "analogy": {
+        "title": "Tuning a guitar by ear",
+        "picture": "Pluck the string, hear how far off it is, nudge the peg the right way, and pluck again — until it's in tune.",
+        "captures": "The rotation angles are pegs, the cost is how far off it sounds, and the gradient says which way to turn.",
+        "breaks": "You hear a guitar's pitch at once. A circuit's cost is estimated from noisy shots, and even the gradient has to be measured (the parameter-shift rule), so every \"listen\" costs many runs."
+      },
+      "takeaway": "A variational circuit has knobs; an optimizer turns them downhill on a measured cost."
     }
   ],
   "units": [
