@@ -13,6 +13,8 @@ Lesson fields used by the Content Studio (title, summary, explanation, ...) are
 kept flat so they stay editable; richer fields are optional at render time.
 """
 
+import re
+
 UNITS = [
     {"id": "one-qubit", "title": "One qubit", "blurb": "What a qubit is, how measurement works, and how gates move the state."},
     {"id": "many-qubits", "title": "Many qubits", "blurb": "Registers, bit order, and entanglement — the part with no classical analogue."},
@@ -71,7 +73,7 @@ LESSONS = [
         ],
         "explanation": [
             "Formally, a qubit is described by two complex numbers called amplitudes, α for |0⟩ and β for |1⟩. The squared magnitudes give the measurement probabilities and always add to one.",
-            "The arrow picture and the amplitudes describe the same thing: the arrow's angle from the north pole sets how |α|² and |β|² are split, and its direction around the equator records the relative phase between them (you will meet phase in Lesson 6).",
+            "The arrow picture and the amplitudes describe the same thing: the arrow's angle from the north pole sets how |α|² and |β|² are split, and its direction around the equator records the relative phase between them (you will meet phase in {lesson:phase}).",
         ],
         "equation": "|psi> = alpha|0> + beta|1>,   |alpha|^2 + |beta|^2 = 1",
         "latex": r"|\psi\rangle = \alpha|0\rangle + \beta|1\rangle,\qquad |\alpha|^2 + |\beta|^2 = 1",
@@ -133,7 +135,7 @@ LESSONS = [
         "try_this": [
             "The worked example applies one X: the bar moves to 100% on 1.",
             "Add a second **X**. Predict before you click.",
-            "Try **Y** instead of X. Do the bars look different? (Hold that thought for Lesson 6.)",
+            "Try **Y** instead of X. Do the bars look different? (Hold that thought for {lesson:phase}.)",
         ],
         "objectives": [
             "Describe a gate as a rotation of the Bloch arrow.",
@@ -221,7 +223,7 @@ LESSONS = [
             "code": _IMPORTS
             + "from qiskit.primitives import StatevectorSampler\n\n"
             "qc = QuantumCircuit(1)\n"
-            "qc.h(0)                 # put the arrow on the equator (Lesson 4)\n"
+            "qc.h(0)                 # put the arrow on the equator ({lesson:superposition})\n"
             "qc.measure_all()        # measure every qubit\n\n"
             "sampler = StatevectorSampler()\n"
             "result = sampler.run([qc], shots=1000).result()\n"
@@ -426,7 +428,7 @@ LESSONS = [
         "try_this": [
             "The example is H then S: the arrow faces sideways (|+i⟩), bars still 50/50.",
             "Add **Z**, **S**, or **T** gates. Watch the Bloch arrow, not just the bars.",
-            "Now add **H** at the end. Suddenly the bars move — Lesson 7 explains why.",
+            "Now add **H** at the end. Suddenly the bars move — {lesson:interference} explains why.",
         ],
         "objectives": [
             "Distinguish amplitude magnitude from phase.",
@@ -550,7 +552,7 @@ LESSONS = [
         "intuition": [
             "So far every measurement asked one question: is the arrow nearer the north pole (0) or the south pole (1)? That's measuring along the **Z axis**.",
             "You can ask about any axis. Measuring along **X** asks 'front (|+⟩) or back (|−⟩)?'; along **Y** asks 'right (|+i⟩) or left (|−i⟩)?'. The odds depend only on how close the arrow is to each end of that axis.",
-            "Hardware can only measure along Z, so Qiskit uses the trick from Lesson 7: **rotate** the axis you care about onto Z, then measure. That's how phase — invisible to a Z measurement — becomes readable.",
+            "Hardware can only measure along Z, so Qiskit uses the trick from {lesson:interference}: **rotate** the axis you care about onto Z, then measure. That's how phase — invisible to a Z measurement — becomes readable.",
         ],
         "widget": {
             "type": "basis_measure",
@@ -764,7 +766,7 @@ LESSONS = [
         "duration": "18 min",
         "summary": "Move an unknown qubit state from Alice to Bob with one shared Bell pair and two ordinary bits — without anyone learning what the state is.",
         "intuition": [
-            "Alice has a qubit in a state she doesn't know, and she can't copy it — unknown quantum states can't be cloned. But she and Bob share a **Bell pair** from Lesson 10.",
+            "Alice has a qubit in a state she doesn't know, and she can't copy it — unknown quantum states can't be cloned. But she and Bob share a **Bell pair** from {lesson:entanglement}.",
             "Alice entangles her mystery qubit with her half of the pair and measures both. Her two results look completely random, but they tell Bob **which of four simple fixes** — nothing, X, Z, or both — turns his half into her original state.",
             "After Bob's fix, his qubit is exactly Alice's state, and hers has been destroyed by the measurement. The state **moved**; it wasn't copied. And nothing travelled faster than light: Bob had to wait for Alice's message.",
         ],
@@ -854,7 +856,7 @@ LESSONS = [
         "intuition": [
             "A black box computes a one-bit function f(x). It's either **constant** (same answer for 0 and 1) or **balanced** (different answers). Classically, you have to try both inputs.",
             "Quantumly, feed it both inputs at once in superposition — and put the box's output qubit in |−⟩. Then the answer doesn't change the output qubit at all. Instead it **kicks back** a sign, (−1)^f(x), onto the input. This is **phase kickback**.",
-            "A constant f leaves the input at |+⟩; a balanced f flips it to |−⟩. One final H turns that phase difference into a definite 0 or 1 — the trick from Lesson 7. One question, certain answer.",
+            "A constant f leaves the input at |+⟩; a balanced f flips it to |−⟩. One final H turns that phase difference into a definite 0 or 1 — the trick from {lesson:interference}. One question, certain answer.",
         ],
         "widget": {
             "type": "deutsch",
@@ -935,7 +937,7 @@ LESSONS = [
         "summary": "Mark the answer with a phase, then use interference to amplify it. With 4 items, one round finds it with certainty.",
         "intuition": [
             "Start with every possible answer equally likely (H on every qubit). Measuring now would be a blind guess.",
-            "The **oracle** secretly flips the sign of the correct answer's amplitude. The odds don't change yet — it's a phase, like Lesson 6.",
+            "The **oracle** secretly flips the sign of the correct answer's amplitude. The odds don't change yet — it's a phase, like {lesson:phase}.",
             "The **diffuser** reflects every amplitude around the average. The marked one, now below average, gets flung far above it; the others shrink. Repeat about √N times and the answer dominates.",
         ],
         "widget": {"type": "grover", "caption": "Pick the database size and step through oracle + diffuser rounds."},
@@ -1189,7 +1191,7 @@ LESSONS = [
         "duration": "15 min",
         "summary": "Give a circuit adjustable knobs, measure how wrong it is, and turn the knobs to do better. That's a variational algorithm.",
         "intuition": [
-            "In Lesson 5 you set an RY angle by hand to hit a target probability. Now let a computer do it.",
+            "In {lesson:rotations} you set an RY angle by hand to hit a target probability. Now let a computer do it.",
             "A **parameterized circuit** has rotation angles left as variables. A classical optimizer runs the circuit, measures a **cost** (how far the output is from what you want), nudges the angles downhill, and repeats.",
             "This loop powers variational chemistry solvers and quantum machine-learning models. It's the same idea as training a neural network — the model just happens to be a circuit.",
         ],
@@ -1263,6 +1265,26 @@ LESSONS = [
 # Lessons are numbered by position, so inserting one never needs manual renumbering.
 for _number, _lesson in enumerate(LESSONS, start=1):
     _lesson["number"] = _number
+
+# Text refers to other lessons as {lesson:<id>}; resolve to "Lesson N" here so
+# references stay correct wherever a lesson is inserted. Unknown ids fail loudly.
+_NUMBERS = {_lesson["id"]: _lesson["number"] for _lesson in LESSONS}
+
+
+def _resolve_refs(value):
+    if isinstance(value, str):
+        return re.sub(r"\{lesson:([a-z0-9-]+)\}", lambda match: f"Lesson {_NUMBERS[match.group(1)]}", value)
+    if isinstance(value, list):
+        return [_resolve_refs(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_resolve_refs(item) for item in value)
+    if isinstance(value, dict):
+        return {key: _resolve_refs(item) for key, item in value.items()}
+    return value
+
+
+for _lesson in LESSONS:
+    _lesson.update(_resolve_refs(_lesson))
 
 
 PRESETS = {

@@ -60,3 +60,15 @@ def test_practice_targets_are_reachable(practice):
 
 def test_glossary_entries_have_picture_and_definition():
     assert all(term and picture and formal for term, picture, formal in GLOSSARY)
+
+
+def test_lesson_cross_references_point_at_the_right_lesson():
+    import json
+    import re
+
+    numbers = {lesson["id"]: lesson["number"] for lesson in LESSONS}
+    text = json.dumps(LESSONS, ensure_ascii=False)
+    assert "{lesson:" not in text
+    assert all(1 <= int(n) <= len(LESSONS) for n in re.findall(r"Lesson (\d+)", text))
+    flip = next(lesson for lesson in LESSONS if lesson["id"] == "flip")
+    assert f"Lesson {numbers['phase']}" in " ".join(flip["try_this"])
