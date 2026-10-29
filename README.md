@@ -38,7 +38,7 @@ Most quantum courses open with linear algebra. This one opens with a picture you
 
 ## Features
 
-- **A notebook that remembers.** Progress, predictions, margin notes, explanations and exercise code save automatically in your browser and come back on your next visit. Nothing is sent to a server. **My notebook** collects everything you wrote; download it as JSON to restore later, or as a Markdown write-up.
+- **A notebook that remembers.** Signed-in progress, predictions, margin notes, explanations and exercise code save automatically to your account in SQLite/Turso and return on another device. Guests keep a browser-only notebook. Account notebooks also keep a local backup for interrupted connections. **My notebook** collects everything you wrote; download it as JSON to restore later, or as a Markdown write-up.
 - **Auto-checked Qiskit exercises.** Your code runs in a sandbox: an import allowlist plus an isolated process with time and memory limits. Its circuit is compared with a reference solution by state fidelity or by measurement distribution.
 - **Instant feedback on explanations.** "Check my reasoning" compares what you wrote with each lesson's key ideas and common misconceptions. It works offline. With `GEMINI_API_KEY` set, an AI model adds notes.
 - **Playground.** A free circuit builder and Qiskit code runner with a code coach, plus practice challenges. Nothing there affects course progress.
@@ -84,6 +84,9 @@ JWT sign-up/login, a profile with a picture and password changes, and email
 password recovery are documented in [Authentication](docs/authentication.md).
 Local development uses SQLite through SQLAlchemy; Vercel uses hosted SQLite
 (Turso), with Resend for password-reset email.
+
+Learn about automatic saves, guest import and simultaneous edits in
+[Notebook synchronization](docs/notebook-sync.md).
 
 ## Configuration
 
@@ -147,7 +150,7 @@ The tests check the quantum engine, the sandbox (including escape attempts), the
 
 ## Known limits
 
-- Progress is stored per browser. Clearing site data or switching devices starts a fresh notebook, unless you download your notebook first and restore it.
+- Guest progress is stored per browser. Sign in to sync it across devices; use **Import browser notebook** to bring guest work into your account. Unsynced offline work needs the browser backup until connectivity returns.
 - On the free Hugging Face tier, the Space sleeps when idle, so the first visit afterwards can take about 30 seconds.
 - Circuits run on a simulator. The hardware lessons simulate a real chip's layout and noise instead of sending jobs to IBM Quantum.
 
