@@ -78,6 +78,13 @@ The root Dockerfile packages both processes and exposes the Node frontend on
 port 7860 (`docker build -t qiskit-intuition .` then
 `docker run --rm -p 7860:7860 qiskit-intuition`).
 
+## Accounts
+
+JWT sign-up/login, a profile with a picture and password changes, and email
+password recovery are documented in [Authentication](docs/authentication.md).
+Local development uses SQLite through SQLAlchemy; Vercel uses hosted SQLite
+(Turso), with Resend for password-reset email.
+
 ## Configuration
 
 Everything is optional. On Hugging Face, add these as **Space secrets**. Locally, put them in a `.env` file.
