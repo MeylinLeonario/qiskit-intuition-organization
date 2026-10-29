@@ -1162,6 +1162,85 @@ LESSONS = [
         "practice": 1,
     },
     {
+        "id": "bernstein-vazirani",
+        "unit": "algorithms",
+        "title": "A secret string in one question",
+        "eyebrow": "Algorithms",
+        "duration": "15 min",
+        "summary": "A box hides a secret bit string. Classically you need one question per bit; the Bernstein–Vazirani algorithm reads the whole string with a single query.",
+        "intuition": [
+            "A box hides a secret string, say s = 11. You hand it any bit string x and it answers with one bit: the parity of s·x — whether s and x share an odd or even number of 1s. Classically, the best you can do is test one position at a time: one question per bit of s.",
+            "Quantumly, reuse the trick from {lesson:deutsch}: put every input qubit in |+⟩ and the answer qubit in |−⟩. Each 1 in the secret kicks a minus sign back onto the matching input qubit, turning its |+⟩ into |−⟩.",
+            "A final H on each input turns |+⟩ back into 0 and |−⟩ into 1. The input register now **is** the secret — every bit of it, from one query.",
+        ],
+        "widget": {
+            "type": "gate_play",
+            "gates": ["H", "Z"],
+            "caption": "Each input qubit goes through H, maybe a kicked-back sign, then H again. One sign flip turns a certain 0 into a certain 1.",
+        },
+        "quiz": {
+            "question": "The secret is s = 10 (q1 = 1, q0 = 0). After one query and the final H gates, what do the input qubits read (q1 q0)?",
+            "options": ["00", "01", "10", "A random string — you need more queries"],
+            "answer": 2,
+            "explanations": [
+                "00 would mean no sign was kicked back at all — a secret of 00.",
+                "That's the secret in the wrong order: Qiskit writes q0 on the right.",
+                "Right. Only q1 received a kicked-back minus sign, so only q1 reads 1.",
+                "The result is certain: before the final H, every input qubit is exactly |+⟩ or |−⟩.",
+            ],
+        },
+        "preset": "Bernstein–Vazirani (secret 11)",
+        "try_this": [
+            "The example hides s = 11 with one CNOT from each input into the answer qubit q2 (which is reset to 0 afterwards). The inputs read 11.",
+            "Remove the CNOT from **q0**. The secret is now 10 — check that the inputs read 10.",
+            "Remove the last two gates (the final H on q0 and q1) and look at the input arrows: each sits at |+⟩ or |−⟩, the secret written in phase.",
+        ],
+        "objectives": [
+            "Describe the secret-string problem and what it costs classically.",
+            "Use phase kickback on several input qubits at once.",
+            "Build Bernstein–Vazirani in Qiskit for any secret.",
+        ],
+        "explanation": [
+            "The oracle writes f(x) = s·x mod 2 into the answer qubit. With the answer qubit in |−⟩ each query becomes |x⟩ → (−1)^{s·x}|x⟩, and with every input in |+⟩ that sign splits into a separate minus sign on each qubit where sᵢ = 1.",
+            "After the oracle the inputs are in the product state ⊗ᵢ (|0⟩ + (−1)^{sᵢ}|1⟩)/√2, and H on each one returns exactly |s⟩. A classical algorithm needs n queries for an n-bit secret; this needs one. The oracle is simple too: one CNOT from input i into the answer qubit for every 1 in s.",
+        ],
+        "equation": "H^n U_f H^n |0...0>|-> = |s>|->,   f(x) = s.x mod 2",
+        "latex": r"H^{\otimes n}\,U_f\,H^{\otimes n}|0\rangle^{\otimes n}|-\rangle = |s\rangle|-\rangle,\qquad f(x) = s\cdot x \bmod 2",
+        "misconception": "The algorithm doesn't query every x and collect the answers. It asks once, with the inputs in superposition, and interference makes the secret the only possible outcome.",
+        "qiskit": {
+            "intro": "A function builds the circuit for any secret: one CNOT per 1 in the secret is the whole oracle.",
+            "code": _IMPORTS
+            + "from qiskit.quantum_info import Statevector\n\n"
+            "def bernstein_vazirani(secret):     # secret written q(n-1) ... q0\n"
+            "    n = len(secret)\n"
+            "    qc = QuantumCircuit(n + 1)\n"
+            "    qc.x(n)\n"
+            "    qc.h(range(n + 1))               # inputs |+>, answer qubit |->\n"
+            "    for i, bit in enumerate(reversed(secret)):\n"
+            "        if bit == '1':\n"
+            "            qc.cx(i, n)              # oracle: one CNOT per 1\n"
+            "    qc.h(range(n))\n"
+            "    return qc\n\n"
+            "state = Statevector(bernstein_vazirani('101'))\n"
+            "print(state.probabilities_dict([0, 1, 2], decimals=3))   # input qubits only\n",
+            "notes": [
+                ("qc.h(range(n + 1))", "Every input to |+⟩; the answer qubit (already flipped to |1⟩) to |−⟩."),
+                ("qc.cx(i, n)", "For each 1 in the secret, a CNOT from that input into the answer qubit — the whole oracle."),
+                ("probabilities_dict([0, 1, 2])", "Measurement odds for the input qubits only: the secret, with certainty."),
+            ],
+        },
+        "code_task": {
+            "prompt": "Build Bernstein–Vazirani for the secret 10 (q1 = 1, q0 = 0) with answer qubit q2, and keep it in `qc`. The inputs should read 10.",
+            "starter": _IMPORTS + "\nqc = QuantumCircuit(3)\nqc.x(2)\nqc.h([0, 1, 2])\n# the oracle for s = 10\n\nqc.h([0, 1])\n",
+            "solution": _IMPORTS + "qc = QuantumCircuit(3)\nqc.x(2)\nqc.h([0, 1, 2])\nqc.cx(1, 2)\nqc.h([0, 1])\n",
+            "match": "probs",
+            "required_ops": ["cx"],
+            "hint": "One CNOT for each 1 in the secret, from that input qubit into q2.",
+        },
+        "checkpoint": "How does one query reveal every bit of the secret, when a classical query reveals only one bit of information?",
+        "practice": 1,
+    },
+    {
         "id": "grover",
         "number": 10,
         "unit": "algorithms",
@@ -1643,6 +1722,21 @@ PRESETS = {
             {"gate": "H", "target": 0, "control": None},
         ],
     },
+    "Bernstein–Vazirani (secret 11)": {
+        "qubits": 3,
+        "gates": [
+            {"gate": "X", "target": 2, "control": None},
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "H", "target": 1, "control": None},
+            {"gate": "H", "target": 2, "control": None},
+            {"gate": "CNOT", "target": 2, "control": 0},
+            {"gate": "CNOT", "target": 2, "control": 1},
+            {"gate": "H", "target": 2, "control": None},
+            {"gate": "X", "target": 2, "control": None},
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "H", "target": 1, "control": None},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -1860,6 +1954,13 @@ ANALOGIES = {
         "A shared resource is set up in advance, only one object travels, and reading the message needs both halves together.",
         "You could look at a posted key and see its position. Alice's qubit on its own looks completely random — it's half of an entangled pair — so anyone who intercepts it learns nothing. The message exists only in the pair.",
         "With a shared Bell pair, sending one qubit delivers two bits — the second rides on the entanglement.",
+    ),
+    "bernstein-vazirani": _analogy(
+        "A wall of switches and a buzzer",
+        "A panel of switches hides which ones are wired to a buzzer. The buzzer only tells you whether an odd or an even number of the wired switches are on. Classically you test one switch at a time; Bernstein–Vazirani tests them all at once and comes back with the full wiring diagram.",
+        "The hidden rule is a parity, and one quantum query replaces n classical ones.",
+        "No real panel can be tested \"all at once\" like this: the inputs must be in superposition, and it only works because the hidden rule is a parity that interference can unpick. Most hidden rules aren't.",
+        "Phase kickback on every input at once: one query reveals the whole secret string.",
     ),
 }
 
@@ -2088,6 +2189,20 @@ RUBRICS = {
         ],
         "watch_for": [
             _watch(["faster than light", "instant"], "nothing travels faster than light — Alice's qubit still has to reach Bob."),
+        ],
+    },
+    "bernstein-vazirani": {
+        "key_ideas": [
+            _idea("Inputs in |+⟩, answer qubit in |−⟩", ["|+", "|-", "|−", "plus", "minus", "superposition", "hadamard"],
+                  "say how the inputs and the answer qubit are prepared."),
+            _idea("Each 1 in the secret kicks back a sign", ["kick", "sign", "phase", "(-1)", "flip"],
+                  "explain that every 1 in the secret puts a minus sign on its own input qubit."),
+            _idea("The final H turns those signs into bits", ["final h", "hadamard", "read", "bits", "each qubit"],
+                  "connect the final H gates to reading out every bit at once."),
+        ],
+        "watch_for": [
+            _watch(["every x", "checks all", "tries every", "all inputs and"],
+                   "it doesn't collect an answer for every input — interference makes the secret the only possible outcome."),
         ],
     },
 }
