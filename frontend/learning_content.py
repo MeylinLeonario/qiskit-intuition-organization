@@ -27,6 +27,83 @@ _IMPORTS = "from qiskit import QuantumCircuit\n"
 LESSONS = [
     # ------------------------------------------------------------------ Unit 1
     {
+        "id": "why-quantum",
+        "unit": "one-qubit",
+        "title": "Why quantum computers?",
+        "eyebrow": "Start here",
+        "duration": "8 min",
+        "summary": "Quantum computers aren't just faster computers. They win on certain problems by making wrong answers cancel out — here's that idea in one small experiment.",
+        "intuition": [
+            "A popular story says a quantum computer \"tries every answer at once\". If that were the whole story it would be useless: a measurement hands you just one answer, picked at random.",
+            "The real trick is **interference**. Quantum states carry amplitudes that behave like waves: they can add up or cancel out. A quantum algorithm is choreographed so that the paths to wrong answers cancel and the paths to the right answer reinforce.",
+            "That only pays off for problems with a hidden structure to exploit — factoring, searching, simulating molecules. For everyday tasks your laptop stays the right tool. This course builds the idea from a single qubit up.",
+        ],
+        "widget": {
+            "type": "interference",
+            "caption": "Slide the phase between two paths. In step, they add up on 0; half a wave apart, 0 vanishes completely. Quantum algorithms are built from exactly this cancellation.",
+        },
+        "quiz": {
+            "question": "Which statement about quantum computers is right?",
+            "options": [
+                "They try every possible answer at once and read off the best one",
+                "They're faster than ordinary computers at everything",
+                "They arrange for wrong answers to cancel out, which helps on certain problems",
+                "They're ordinary computers built from very small transistors",
+            ],
+            "answer": 2,
+            "explanations": [
+                "A measurement returns one random outcome. Without interference, \"all answers at once\" is just a random guess.",
+                "For most everyday tasks they're slower and noisier. The advantages are for specific problems.",
+                "Right. Interference — amplitudes adding up and cancelling — is the engine, and it only pays off on problems with the right structure.",
+                "Small transistors are still classical. Qubits are different: they carry amplitudes that interfere.",
+            ],
+        },
+        "preset": "Paths cancel (H, H)",
+        "try_this": [
+            "The example applies H twice. One H alone gives 50/50 — so where did all the 1s go? Their two paths cancelled.",
+            "Remove the last H and the 50/50 comes back.",
+            "Put the second H back, with a **Z** between the two H gates. Now the paths to 0 cancel instead, and every shot reads 1.",
+        ],
+        "objectives": [
+            "Explain why \"trying every answer at once\" isn't where quantum speed-ups come from.",
+            "Describe interference as amplitudes adding up or cancelling.",
+            "Run your first Qiskit circuit.",
+        ],
+        "explanation": [
+            "Each outcome of a quantum computation has an **amplitude**: a number that can be positive, negative or even complex. The probability of an outcome is the squared size of its amplitude, and when several paths lead to the same outcome, their amplitudes add.",
+            "With two H gates, the two paths to |1⟩ carry amplitudes +½ and −½: they sum to zero, so 1 never appears. The paths to |0⟩ carry +½ and +½ and add up to 1. Every algorithm in this course is a more elaborate version of this bookkeeping.",
+        ],
+        "equation": "P(x) = |sum of the amplitudes of every path to x|^2",
+        "latex": r"P(x) = \Big|\sum_{\text{paths}\to x} a_{\text{path}}\Big|^2,\qquad HH|0\rangle:\ a_{1} = \tfrac12 - \tfrac12 = 0",
+        "misconception": "Quantum computers aren't fast because they \"try everything in parallel\". A measurement shows one outcome; the speed-up comes from interference making the useful outcome likely.",
+        "qiskit": {
+            "intro": "Your first Qiskit program: build a one-qubit circuit, apply H once or twice, and ask for the exact chance of each outcome.",
+            "code": _IMPORTS
+            + "from qiskit.quantum_info import Statevector\n\n"
+            "once = QuantumCircuit(1)\n"
+            "once.h(0)                 # split into two paths\n\n"
+            "twice = QuantumCircuit(1)\n"
+            "twice.h(0)\n"
+            "twice.h(0)                # recombine: the paths to 1 cancel\n\n"
+            "print('one H:  ', Statevector(once).probabilities_dict(decimals=3))\n"
+            "print('two Hs: ', Statevector(twice).probabilities_dict(decimals=3))\n",
+            "notes": [
+                ("QuantumCircuit(1)", "A circuit with one qubit, which starts in |0⟩."),
+                ("once.h(0)", "The Hadamard gate splits the state into two paths, one to 0 and one to 1."),
+                ("probabilities_dict()", "The exact chance of each outcome."),
+            ],
+        },
+        "code_task": {
+            "prompt": "Build `qc` with one qubit and two H gates, so the paths to 1 cancel and the qubit ends in |0⟩.",
+            "starter": _IMPORTS + "\nqc = QuantumCircuit(1)\n# add two H gates\n",
+            "solution": _IMPORTS + "qc = QuantumCircuit(1)\nqc.h(0)\nqc.h(0)\n",
+            "required_ops": ["h"],
+            "hint": "Call `qc.h(0)` twice.",
+        },
+        "checkpoint": "In your own words: why doesn't \"trying every answer at once\" make a computer faster, and what does interference add?",
+        "practice": 1,
+    },
+    {
         "id": "qubit",
         "number": 1,
         "unit": "one-qubit",
@@ -1384,6 +1461,13 @@ PRESETS = {
             {"gate": "RY", "target": 0, "control": None, "angle": 0.7854},
         ],
     },
+    "Paths cancel (H, H)": {
+        "qubits": 1,
+        "gates": [
+            {"gate": "H", "target": 0, "control": None},
+            {"gate": "H", "target": 0, "control": None},
+        ],
+    },
 }
 
 PRACTICE = [
@@ -1581,6 +1665,13 @@ ANALOGIES = {
         "You hear a guitar's pitch at once. A circuit's cost is estimated from noisy shots, and even the gradient has to be measured (the parameter-shift rule), so every \"listen\" costs many runs.",
         "A variational circuit has knobs; an optimizer turns them downhill on a measured cost.",
     ),
+    "why-quantum": _analogy(
+        "Water waves through a harbour wall",
+        "Waves pass through two gaps in a harbour wall and spread out. Where a crest from one gap meets a trough from the other, the water stays flat; where crests meet, the waves grow. Move the gaps and you choose where the calm spots are.",
+        "Outcomes come from paths adding up or cancelling, and a quantum algorithm places the \"calm spots\" on the wrong answers.",
+        "Water waves are real ripples in space that you can watch. Quantum amplitudes live in the space of possible answers, and you never see the wave — each run shows you one outcome.",
+        "Quantum speed-ups come from interference: wrong answers cancel, right ones reinforce.",
+    ),
 }
 
 
@@ -1768,6 +1859,20 @@ RUBRICS = {
                   "the gradient (e.g. from the parameter-shift rule) points the way."),
         ],
         "watch_for": [],
+    },
+    "why-quantum": {
+        "key_ideas": [
+            _idea("A measurement gives one answer", ["one answer", "one outcome", "single", "random", "measur"],
+                  "say why reading \"all the answers\" isn't possible: a measurement returns one outcome."),
+            _idea("Interference cancels or reinforces paths", ["interfer", "cancel", "reinforc", "add up", "wave", "amplitude"],
+                  "name interference: the amplitudes of different paths add up or cancel."),
+            _idea("Only some problems benefit", ["some problems", "certain", "structure", "specific", "not everything", "factor", "search"],
+                  "say that the advantage only exists for problems with the right structure."),
+        ],
+        "watch_for": [
+            _watch(["tries every", "all answers at once", "every answer at once", "in parallel"],
+                   "trying everything at once isn't the speed-up — a measurement would hand you one random answer."),
+        ],
     },
 }
 

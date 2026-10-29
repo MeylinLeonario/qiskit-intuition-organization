@@ -5,8 +5,144 @@
   },
   "lessons": [
     {
-      "id": "qubit",
+      "id": "why-quantum",
+      "unit": "one-qubit",
+      "title": "Why quantum computers?",
+      "eyebrow": "Start here",
+      "duration": "8 min",
+      "summary": "Quantum computers aren't just faster computers. They win on certain problems by making wrong answers cancel out — here's that idea in one small experiment.",
+      "intuition": [
+        "A popular story says a quantum computer \"tries every answer at once\". If that were the whole story it would be useless: a measurement hands you just one answer, picked at random.",
+        "The real trick is **interference**. Quantum states carry amplitudes that behave like waves: they can add up or cancel out. A quantum algorithm is choreographed so that the paths to wrong answers cancel and the paths to the right answer reinforce.",
+        "That only pays off for problems with a hidden structure to exploit — factoring, searching, simulating molecules. For everyday tasks your laptop stays the right tool. This course builds the idea from a single qubit up."
+      ],
+      "widget": {
+        "type": "interference",
+        "caption": "Slide the phase between two paths. In step, they add up on 0; half a wave apart, 0 vanishes completely. Quantum algorithms are built from exactly this cancellation."
+      },
+      "quiz": {
+        "question": "Which statement about quantum computers is right?",
+        "options": [
+          "They try every possible answer at once and read off the best one",
+          "They're faster than ordinary computers at everything",
+          "They arrange for wrong answers to cancel out, which helps on certain problems",
+          "They're ordinary computers built from very small transistors"
+        ],
+        "answer": 2,
+        "explanations": [
+          "A measurement returns one random outcome. Without interference, \"all answers at once\" is just a random guess.",
+          "For most everyday tasks they're slower and noisier. The advantages are for specific problems.",
+          "Right. Interference — amplitudes adding up and cancelling — is the engine, and it only pays off on problems with the right structure.",
+          "Small transistors are still classical. Qubits are different: they carry amplitudes that interfere."
+        ]
+      },
+      "preset": "Paths cancel (H, H)",
+      "try_this": [
+        "The example applies H twice. One H alone gives 50/50 — so where did all the 1s go? Their two paths cancelled.",
+        "Remove the last H and the 50/50 comes back.",
+        "Put the second H back, with a **Z** between the two H gates. Now the paths to 0 cancel instead, and every shot reads 1."
+      ],
+      "objectives": [
+        "Explain why \"trying every answer at once\" isn't where quantum speed-ups come from.",
+        "Describe interference as amplitudes adding up or cancelling.",
+        "Run your first Qiskit circuit."
+      ],
+      "explanation": [
+        "Each outcome of a quantum computation has an **amplitude**: a number that can be positive, negative or even complex. The probability of an outcome is the squared size of its amplitude, and when several paths lead to the same outcome, their amplitudes add.",
+        "With two H gates, the two paths to |1⟩ carry amplitudes +½ and −½: they sum to zero, so 1 never appears. The paths to |0⟩ carry +½ and +½ and add up to 1. Every algorithm in this course is a more elaborate version of this bookkeeping."
+      ],
+      "equation": "P(x) = |sum of the amplitudes of every path to x|^2",
+      "latex": "P(x) = \\Big|\\sum_{\\text{paths}\\to x} a_{\\text{path}}\\Big|^2,\\qquad HH|0\\rangle:\\ a_{1} = \\tfrac12 - \\tfrac12 = 0",
+      "misconception": "Quantum computers aren't fast because they \"try everything in parallel\". A measurement shows one outcome; the speed-up comes from interference making the useful outcome likely.",
+      "qiskit": {
+        "intro": "Your first Qiskit program: build a one-qubit circuit, apply H once or twice, and ask for the exact chance of each outcome.",
+        "code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\n\nonce = QuantumCircuit(1)\nonce.h(0)                 # split into two paths\n\ntwice = QuantumCircuit(1)\ntwice.h(0)\ntwice.h(0)                # recombine: the paths to 1 cancel\n\nprint('one H:  ', Statevector(once).probabilities_dict(decimals=3))\nprint('two Hs: ', Statevector(twice).probabilities_dict(decimals=3))\n",
+        "notes": [
+          [
+            "QuantumCircuit(1)",
+            "A circuit with one qubit, which starts in |0⟩."
+          ],
+          [
+            "once.h(0)",
+            "The Hadamard gate splits the state into two paths, one to 0 and one to 1."
+          ],
+          [
+            "probabilities_dict()",
+            "The exact chance of each outcome."
+          ]
+        ]
+      },
+      "code_task": {
+        "prompt": "Build `qc` with one qubit and two H gates, so the paths to 1 cancel and the qubit ends in |0⟩.",
+        "starter": "from qiskit import QuantumCircuit\n\nqc = QuantumCircuit(1)\n# add two H gates\n",
+        "required_ops": [
+          "h"
+        ],
+        "hint": "Call `qc.h(0)` twice."
+      },
+      "checkpoint": "In your own words: why doesn't \"trying every answer at once\" make a computer faster, and what does interference add?",
+      "practice": 1,
       "number": 1,
+      "key_ideas": [
+        {
+          "idea": "A measurement gives one answer",
+          "terms": [
+            "one answer",
+            "one outcome",
+            "single",
+            "random",
+            "measur"
+          ],
+          "hint": "say why reading \"all the answers\" isn't possible: a measurement returns one outcome."
+        },
+        {
+          "idea": "Interference cancels or reinforces paths",
+          "terms": [
+            "interfer",
+            "cancel",
+            "reinforc",
+            "add up",
+            "wave",
+            "amplitude"
+          ],
+          "hint": "name interference: the amplitudes of different paths add up or cancel."
+        },
+        {
+          "idea": "Only some problems benefit",
+          "terms": [
+            "some problems",
+            "certain",
+            "structure",
+            "specific",
+            "not everything",
+            "factor",
+            "search"
+          ],
+          "hint": "say that the advantage only exists for problems with the right structure."
+        }
+      ],
+      "watch_for": [
+        {
+          "terms": [
+            "tries every",
+            "all answers at once",
+            "every answer at once",
+            "in parallel"
+          ],
+          "note": "trying everything at once isn't the speed-up — a measurement would hand you one random answer."
+        }
+      ],
+      "analogy": {
+        "title": "Water waves through a harbour wall",
+        "picture": "Waves pass through two gaps in a harbour wall and spread out. Where a crest from one gap meets a trough from the other, the water stays flat; where crests meet, the waves grow. Move the gaps and you choose where the calm spots are.",
+        "captures": "Outcomes come from paths adding up or cancelling, and a quantum algorithm places the \"calm spots\" on the wrong answers.",
+        "breaks": "Water waves are real ripples in space that you can watch. Quantum amplitudes live in the space of possible answers, and you never see the wave — each run shows you one outcome."
+      },
+      "takeaway": "Quantum speed-ups come from interference: wrong answers cancel, right ones reinforce."
+    },
+    {
+      "id": "qubit",
+      "number": 2,
       "unit": "one-qubit",
       "title": "What is a qubit?",
       "eyebrow": "Foundations",
@@ -51,7 +187,7 @@
       ],
       "explanation": [
         "Formally, a qubit is described by two complex numbers called amplitudes, α for |0⟩ and β for |1⟩. The squared magnitudes give the measurement probabilities and always add to one.",
-        "The arrow picture and the amplitudes describe the same thing: the arrow's angle from the north pole sets how |α|² and |β|² are split, and its direction around the equator records the relative phase between them (you will meet phase in Lesson 6)."
+        "The arrow picture and the amplitudes describe the same thing: the arrow's angle from the north pole sets how |α|² and |β|² are split, and its direction around the equator records the relative phase between them (you will meet phase in Lesson 7)."
       ],
       "equation": "|psi> = alpha|0> + beta|1>,   |alpha|^2 + |beta|^2 = 1",
       "latex": "|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle,\\qquad |\\alpha|^2 + |\\beta|^2 = 1",
@@ -142,7 +278,7 @@
     },
     {
       "id": "flip",
-      "number": 2,
+      "number": 3,
       "unit": "one-qubit",
       "title": "Flipping a qubit with X",
       "eyebrow": "Your first gate",
@@ -181,7 +317,7 @@
       "try_this": [
         "The worked example applies one X: the bar moves to 100% on 1.",
         "Add a second **X**. Predict before you click.",
-        "Try **Y** instead of X. Do the bars look different? (Hold that thought for Lesson 6.)"
+        "Try **Y** instead of X. Do the bars look different? (Hold that thought for Lesson 7.)"
       ],
       "objectives": [
         "Describe a gate as a rotation of the Bloch arrow.",
@@ -267,7 +403,7 @@
     },
     {
       "id": "measurement",
-      "number": 3,
+      "number": 4,
       "unit": "one-qubit",
       "title": "Measurement and shots",
       "eyebrow": "Foundations",
@@ -318,7 +454,7 @@
       "misconception": "Counts like 512/488 instead of 500/500 don't mean the circuit is wrong — that's shot noise. Compare to the exact probabilities before blaming the circuit.",
       "qiskit": {
         "intro": "`measure_all()` adds a measurement to every qubit. `StatevectorSampler` is a local, ideal Sampler: it returns counts just like hardware would.",
-        "code": "from qiskit import QuantumCircuit\nfrom qiskit.primitives import StatevectorSampler\n\nqc = QuantumCircuit(1)\nqc.h(0)                 # put the arrow on the equator (Lesson 4)\nqc.measure_all()        # measure every qubit\n\nsampler = StatevectorSampler()\nresult = sampler.run([qc], shots=1000).result()\ncounts = result[0].data.meas.get_counts()\nprint(counts)\n",
+        "code": "from qiskit import QuantumCircuit\nfrom qiskit.primitives import StatevectorSampler\n\nqc = QuantumCircuit(1)\nqc.h(0)                 # put the arrow on the equator (Lesson 5)\nqc.measure_all()        # measure every qubit\n\nsampler = StatevectorSampler()\nresult = sampler.run([qc], shots=1000).result()\ncounts = result[0].data.meas.get_counts()\nprint(counts)\n",
         "notes": [
           [
             "measure_all()",
@@ -403,7 +539,7 @@
     },
     {
       "id": "superposition",
-      "number": 4,
+      "number": 5,
       "unit": "one-qubit",
       "title": "Superposition with H",
       "eyebrow": "Single-qubit gates",
@@ -540,7 +676,7 @@
     },
     {
       "id": "rotations",
-      "number": 5,
+      "number": 6,
       "unit": "one-qubit",
       "title": "Rotations: dialing in probability",
       "eyebrow": "Single-qubit gates",
@@ -664,7 +800,7 @@
     },
     {
       "id": "phase",
-      "number": 6,
+      "number": 7,
       "unit": "one-qubit",
       "title": "Phase: the hidden direction",
       "eyebrow": "Quantum behaviour",
@@ -702,7 +838,7 @@
       "try_this": [
         "The example is H then S: the arrow faces sideways (|+i⟩), bars still 50/50.",
         "Add **Z**, **S**, or **T** gates. Watch the Bloch arrow, not just the bars.",
-        "Now add **H** at the end. Suddenly the bars move — Lesson 7 explains why."
+        "Now add **H** at the end. Suddenly the bars move — Lesson 8 explains why."
       ],
       "objectives": [
         "Distinguish amplitude magnitude from phase.",
@@ -796,7 +932,7 @@
     },
     {
       "id": "interference",
-      "number": 7,
+      "number": 8,
       "unit": "one-qubit",
       "title": "Interference",
       "eyebrow": "Quantum behaviour",
@@ -937,7 +1073,7 @@
       "intuition": [
         "So far every measurement asked one question: is the arrow nearer the north pole (0) or the south pole (1)? That's measuring along the **Z axis**.",
         "You can ask about any axis. Measuring along **X** asks 'front (|+⟩) or back (|−⟩)?'; along **Y** asks 'right (|+i⟩) or left (|−i⟩)?'. The odds depend only on how close the arrow is to each end of that axis.",
-        "Hardware can only measure along Z, so Qiskit uses the trick from Lesson 7: **rotate** the axis you care about onto Z, then measure. That's how phase — invisible to a Z measurement — becomes readable."
+        "Hardware can only measure along Z, so Qiskit uses the trick from Lesson 8: **rotate** the axis you care about onto Z, then measure. That's how phase — invisible to a Z measurement — becomes readable."
       ],
       "widget": {
         "type": "basis_measure",
@@ -1008,7 +1144,7 @@
       },
       "checkpoint": "Why can an X-basis measurement tell |+⟩ and |−⟩ apart when a Z-basis measurement can't?",
       "practice": 1,
-      "number": 8,
+      "number": 9,
       "key_ideas": [
         {
           "idea": "A measurement asks about one axis",
@@ -1061,7 +1197,7 @@
     },
     {
       "id": "registers",
-      "number": 9,
+      "number": 10,
       "unit": "many-qubits",
       "title": "Many qubits and bit order",
       "eyebrow": "Multi-qubit systems",
@@ -1167,7 +1303,7 @@
     },
     {
       "id": "entanglement",
-      "number": 10,
+      "number": 11,
       "unit": "many-qubits",
       "title": "Entanglement",
       "eyebrow": "Multi-qubit systems",
@@ -1305,7 +1441,7 @@
       "duration": "18 min",
       "summary": "Move an unknown qubit state from Alice to Bob with one shared Bell pair and two ordinary bits — without anyone learning what the state is.",
       "intuition": [
-        "Alice has a qubit in a state she doesn't know, and she can't copy it — unknown quantum states can't be cloned. But she and Bob share a **Bell pair** from Lesson 10.",
+        "Alice has a qubit in a state she doesn't know, and she can't copy it — unknown quantum states can't be cloned. But she and Bob share a **Bell pair** from Lesson 11.",
         "Alice entangles her mystery qubit with her half of the pair and measures both. Her two results look completely random, but they tell Bob **which of four simple fixes** — nothing, X, Z, or both — turns his half into her original state.",
         "After Bob's fix, his qubit is exactly Alice's state, and hers has been destroyed by the measurement. The state **moved**; it wasn't copied. And nothing travelled faster than light: Bob had to wait for Alice's message."
       ],
@@ -1379,7 +1515,7 @@
       },
       "checkpoint": "Why can't Bob use teleportation to receive a message before Alice's bits arrive?",
       "practice": 2,
-      "number": 11,
+      "number": 12,
       "key_ideas": [
         {
           "idea": "Bob needs Alice's two classical bits",
@@ -1435,7 +1571,7 @@
       "intuition": [
         "A black box computes a one-bit function f(x). It's either **constant** (same answer for 0 and 1) or **balanced** (different answers). Classically, you have to try both inputs.",
         "Quantumly, feed it both inputs at once in superposition — and put the box's output qubit in |−⟩. Then the answer doesn't change the output qubit at all. Instead it **kicks back** a sign, (−1)^f(x), onto the input. This is **phase kickback**.",
-        "A constant f leaves the input at |+⟩; a balanced f flips it to |−⟩. One final H turns that phase difference into a definite 0 or 1 — the trick from Lesson 7. One question, certain answer."
+        "A constant f leaves the input at |+⟩; a balanced f flips it to |−⟩. One final H turns that phase difference into a definite 0 or 1 — the trick from Lesson 8. One question, certain answer."
       ],
       "widget": {
         "type": "deutsch",
@@ -1503,7 +1639,7 @@
       },
       "checkpoint": "Why does putting the output qubit in |−⟩ turn the oracle's answer into a phase on the input?",
       "practice": 1,
-      "number": 12,
+      "number": 13,
       "key_ideas": [
         {
           "idea": "The output qubit starts in |−⟩",
@@ -1560,7 +1696,7 @@
     },
     {
       "id": "grover",
-      "number": 13,
+      "number": 14,
       "unit": "algorithms",
       "title": "Your first algorithm: Grover search",
       "eyebrow": "Algorithms",
@@ -1568,7 +1704,7 @@
       "summary": "Mark the answer with a phase, then use interference to amplify it. With 4 items, one round finds it with certainty.",
       "intuition": [
         "Imagine four sealed boxes, one hiding a prize, and a helper who won't say which box it is but will quietly mark it. Start with every box equally likely (H on every qubit) — measuring now would be a blind guess.",
-        "The **oracle** secretly flips the sign of the correct answer's amplitude. The odds don't change yet — it's a phase, like Lesson 6.",
+        "The **oracle** secretly flips the sign of the correct answer's amplitude. The odds don't change yet — it's a phase, like Lesson 7.",
         "The **diffuser** reflects every amplitude around the average. The marked one, now below average, gets flung far above it; the others shrink. Repeat about √N times and the answer dominates."
       ],
       "widget": {
@@ -1694,7 +1830,7 @@
     },
     {
       "id": "hardware",
-      "number": 14,
+      "number": 15,
       "unit": "real-world",
       "title": "Noise and real hardware",
       "eyebrow": "Execution",
@@ -1893,7 +2029,7 @@
       },
       "checkpoint": "Why can the same circuit be noisier on one chip than on another, even if every gate is equally good?",
       "practice": 2,
-      "number": 15,
+      "number": 16,
       "key_ideas": [
         {
           "idea": "Wiring decides which qubits can interact",
@@ -1940,14 +2076,14 @@
     },
     {
       "id": "qml",
-      "number": 16,
+      "number": 17,
       "unit": "real-world",
       "title": "Trainable circuits and quantum ML",
       "eyebrow": "Machine learning",
       "duration": "15 min",
       "summary": "Give a circuit adjustable knobs, measure how wrong it is, and turn the knobs to do better. That's a variational algorithm.",
       "intuition": [
-        "Think of a circuit with knobs. In Lesson 5 you turned an RY knob by hand until the probability hit a target. Now let a computer turn the knobs for you.",
+        "Think of a circuit with knobs. In Lesson 6 you turned an RY knob by hand until the probability hit a target. Now let a computer turn the knobs for you.",
         "A **parameterized circuit** has rotation angles left as variables. A classical optimizer runs the circuit, measures a **cost** (how far the output is from what you want), nudges the angles downhill, and repeats.",
         "This loop powers variational chemistry solvers and quantum machine-learning models. It's the same idea as training a neural network — the model just happens to be a circuit."
       ],
@@ -2382,6 +2518,21 @@
           "target": 0,
           "control": null,
           "angle": 0.7854
+        }
+      ]
+    },
+    "Paths cancel (H, H)": {
+      "qubits": 1,
+      "gates": [
+        {
+          "gate": "H",
+          "target": 0,
+          "control": null
+        },
+        {
+          "gate": "H",
+          "target": 0,
+          "control": null
         }
       ]
     }
