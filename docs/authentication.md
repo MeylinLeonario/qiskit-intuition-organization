@@ -95,3 +95,24 @@ The same contract runs against Python SQLite and Turso's libSQL driver locally.
 
 Never commit `.env`, database files or live credentials. Do not print session
 cookies or reset tokens in production logs.
+
+## Diagnosing signup HTTP 503
+
+`Authentication database failure (ValueError)` alone does not identify the cause.
+The backend now adds a fixed safe `code`, `stage`, source location and hint:
+
+- `DB_AUTH_REJECTED` / `DB_TOKEN_EXPIRED`: check or regenerate the Turso database token.
+- `DB_PERMISSION_DENIED` / `DB_READ_ONLY`: use a database-scoped token with write
+  and schema permissions, rather than a read-only or unrelated management token.
+- `DB_CONNECTION_FAILED` / `DB_TLS_ERROR` / `DB_TIMEOUT`: check the database
+  origin and service connectivity; keep TLS verification enabled.
+- `DB_SCHEMA_ERROR` / `DB_REMOTE_OPERATION_UNSUPPORTED`: inspect the initialization
+  stage and driver operation. Local `busy_timeout` is not sent to hosted libSQL.
+- `DB_PROTOCOL_ERROR` / `DB_UNCLASSIFIED`: share only the diagnostic code, stage
+  and location for further investigation.
+
+Native exception messages, SQL parameters, passwords, reset links and tokens are
+not logged. Set `TURSO_AUTH_TOKEN` to the token value alone, without a `Bearer`
+prefix, surrounding quotes or internal whitespace. Redeploy after changing Vercel
+environment variables. No production credential changes are required to deploy
+the improved diagnostics.
