@@ -15,6 +15,7 @@ const paths = new Set([
   "auth/login",
   "auth/logout",
   "auth/me",
+  "auth/notebook",
   "auth/profile",
   "auth/avatar",
   "auth/change-password",
@@ -55,7 +56,8 @@ async function proxy(
     route === "health" ||
     route === "course" ||
     route === "auth/me" ||
-    (route === "auth/avatar" && request.method === "GET");
+    (["auth/avatar", "auth/notebook"].includes(route) &&
+      request.method === "GET");
   if (request.method !== (readOnly ? "GET" : "POST")) {
     return Response.json({ detail: "Method not allowed" }, { status: 405 });
   }
@@ -63,7 +65,11 @@ async function proxy(
   if (
     body &&
     new TextEncoder().encode(body).length >
-      (route === "auth/avatar" ? 3000000 : 100000)
+      (route === "auth/avatar"
+        ? 3000000
+        : route === "auth/notebook"
+          ? 1100000
+          : 100000)
   ) {
     return Response.json({ detail: "Request too large" }, { status: 413 });
   }
@@ -120,6 +126,13 @@ async function proxy(
       responseHeaders.set("Content-Type", "image/jpeg");
       responseHeaders.set("X-Content-Type-Options", "nosniff");
       return new Response(await upstream.arrayBuffer(), {
+        headers: responseHeaders,
+      });
+    }
+    if (route === "auth/notebook" && upstream.status === 409) {
+      // Preserve the server snapshot needed for an explicit three-way merge.
+      return Response.json(await upstream.json(), {
+        status: 409,
         headers: responseHeaders,
       });
     }

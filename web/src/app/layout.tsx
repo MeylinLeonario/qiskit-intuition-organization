@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./notebook.css";
 import "./auth.css";
+import { NotebookProvider } from "@/components/notebook-provider";
 import { AuthProvider } from "@/components/auth-provider";
 
 export const metadata: Metadata = {
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <NotebookProvider>{children}</NotebookProvider>
+        </AuthProvider>
       </body>
     </html>
   );

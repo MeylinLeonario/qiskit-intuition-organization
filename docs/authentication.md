@@ -1,10 +1,13 @@
 # Authentication
 
-Branch: `feat/authentication`. The course remains available to guests. Account
+Authentication: `feat/authentication`; account notebook sync: `feat/database-connection`. The course remains available to guests. Account
 records, Argon2id password hashes, profile pictures, JWT session records,
 password-reset token hashes and rate limits live in SQLite, through SQLAlchemy.
-The existing course notebook continues to use browser storage; signing in does
-not automatically migrate it to the account database.
+Signed-in notebooks (completion, exercises, predictions, margin notes, reflections,
+code attempts, reading mode and current lesson/stage) are stored per account in
+SQLite/Turso. Guests keep the original browser-only notebook. A guest notebook
+is imported only when the learner chooses **Import browser notebook**. See
+[Notebook synchronization](notebook-sync.md) for conflict and offline behavior.
 
 ## Local development
 

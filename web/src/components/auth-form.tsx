@@ -48,8 +48,8 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       )}
       {mode === "signup" && (
         <p>
-          Create an account to personalize your profile. Your course notebook
-          continues to be saved in this browser.
+          Create an account to personalize your profile. Your notebook will sync
+          with your account across devices.
         </p>
       )}
       {message ? (

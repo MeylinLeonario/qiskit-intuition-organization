@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 load_dotenv()
 
 from backend.routers import agents, auth, course, execute, simulate
+from backend.auth.notebook import router as notebook_router
 
 app = FastAPI(
     title="Qiskit Intuition Lab API",
@@ -61,6 +62,7 @@ for error_type in auth.AUTH_ERROR_TYPES:
 
 # Mount routers
 app.include_router(auth.router)
+app.include_router(notebook_router)
 app.include_router(course.router, tags=["course"])
 app.include_router(simulate.router, tags=["simulation"])
 app.include_router(execute.router, tags=["execution"])

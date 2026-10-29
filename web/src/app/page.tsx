@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AccountMenu } from "@/components/auth-provider";
 import CircuitLab from "@/components/circuit-lab";
 import IntuitionWidget from "@/components/intuition-widget";
 import { course, parseContent } from "@/lib/course";
 import type { Lesson } from "@/lib/course";
-import {
-  notebookMarkdown,
-  sanitizeNotebook,
-  STORAGE_KEY,
-} from "@/lib/notebook";
+import { notebookMarkdown, sanitizeNotebook } from "@/lib/notebook";
 import type { Notebook } from "@/lib/notebook";
+import {
+  useNotebook,
+  NotebookSyncNotice,
+} from "@/components/notebook-provider";
 import { api } from "@/services/api";
 
 const STAGES = [
@@ -64,8 +64,9 @@ type Feedback = {
 export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>(course.lessons);
   const [brand, setBrand] = useState(course.brand);
-  const [notebook, setNotebook] = useState<Notebook>(() => sanitizeNotebook());
-  const [ready, setReady] = useState(false);
+  const { notebook, setNotebook, ready, owner } = useNotebook();
+  const activeOwner = useRef(owner);
+  activeOwner.current = owner;
   const [view, setView] = useState("course");
   const [notice, setNotice] = useState("");
   const [feedback, setFeedback] = useState<Feedback>({});
@@ -78,26 +79,10 @@ export default function Home() {
   const code = notebook.code_attempts[lesson.id] ?? lesson.code_task.starter;
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setNotebook(sanitizeNotebook(JSON.parse(saved)));
-    } catch {
-      setNotice(
-        "Browser storage is unavailable. Download your notebook to keep a copy.",
-      );
-    }
-    setReady(true);
-  }, []);
-  useEffect(() => {
-    if (!ready) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(notebook));
-    } catch {
-      setNotice(
-        "Your notebook could not be saved. Download a copy before leaving.",
-      );
-    }
-  }, [notebook, ready]);
+    setFeedback({});
+    setNotice("");
+    setBusy(false);
+  }, [owner]);
 
   const patch = (update: Partial<Notebook>) =>
     setNotebook((current) => ({ ...current, ...update }));
@@ -129,6 +114,7 @@ export default function Home() {
     setFeedback({});
     try {
       const data = await api<Feedback>(operation, body);
+      if (activeOwner.current !== owner) return;
       setFeedback(data);
       if (data.passed)
         setNotebook((current) => ({
@@ -138,11 +124,12 @@ export default function Home() {
           ),
         }));
     } catch (error) {
+      if (activeOwner.current !== owner) return;
       setFeedback({
         error: error instanceof Error ? error.message : "Request failed",
       });
     } finally {
-      setBusy(false);
+      if (activeOwner.current === owner) setBusy(false);
     }
   };
   const feedbackLink = `https://github.com/MeylinLeonario/qiskit-intuition-organization/issues/new?${new URLSearchParams({ title: `[Feedback] ${lesson.title}`, body: `Page: ${view}\nLesson: ${lesson.title}\nStage: ${STAGES[stage]}\n\nWhat happened?\n` })}`;
@@ -224,6 +211,7 @@ export default function Home() {
         </a>
       </aside>
       <main className="course-main">
+        <NotebookSyncNotice />
         {notice && (
           <p role="status" className="explanation-card">
             {notice}
@@ -492,8 +480,10 @@ export default function Home() {
           <>
             <h1>My notebook</h1>
             <p>
-              Saved in this browser. Download a backup or import a notebook from
-              Streamlit.
+              {owner
+                ? "Saved to your account and synced across devices."
+                : "Saved in this browser. Sign in to sync across devices."}{" "}
+              Download a backup or import a notebook from Streamlit.
             </p>
             <div className="course-controls">
               <button
